@@ -1,0 +1,67 @@
+-- Util module
+
+local M = {}
+
+---Attempt to load ('require') a module with error handling
+---@param mod string dot-separated path to module
+---@return any
+function M.try(mod)
+  local ok, mod_or_err = pcall(require, mod)
+  if not ok then
+    vim.notify('Error loading module ' .. mod .. "': " .. mod_or_err)
+  end
+  return mod_or_err
+end
+
+---```lua
+--- local dayTime = 11
+---
+--- switch(dayTime) {
+---   [11] = function() print("It's morning.") end,
+---   [18] = function() print("It's afternoon.") end,
+---   default = function() print("Unknown time.") end
+--- }
+---```
+---A switch/case statement for lua
+---@param value any
+---@return function
+function M.switch(value)
+  return function(cases)
+    local case = cases[value] or cases.default
+    if case then
+      return case(value)
+    else
+      error(string.format("Unhandled case (%s)", value), 2)
+    end
+  end
+end
+
+--- Toggle line numbers between relative and ordered
+function M.toggle_numbers()
+  if vim.o.relativenumber then
+    vim.opt.relativenumber = false
+  else
+    vim.opt.relativenumber = true
+  end
+end
+
+---Require all of the lua modules in the given path
+---@param path string The path to require modules from
+---@param exclude? table<string> Array of patterns to exclude
+---@param depth? How many levels to recurse
+---@return nil|string nil on success, message on error
+function M.require_all(opts)
+  if vim.fn.isdirectory(opts.path) == 1 then
+    (vim.fn.dir(opts.path)):filter(function(file)
+      local ext = vim.fn.fnamemodify(file, ':e')
+      local fname = vim.fn.fnamemodify(file, ':r')
+      -- TODO: if the file is a lua file and not excluded, require it with try
+    end)
+  end
+end
+
+function M.path_exists(path)
+  return vim.loop.fs_stat(path) ~= nil
+end
+
+return M
