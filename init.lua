@@ -1,14 +1,16 @@
 
+-- Some often used options are set here, such as colorscheme, font, etc
+local options = require('options')
 
-local util = require('util')
-local mngr = require('manager.lazy'):new()
+local config = require('config')
+config.options = options
 
-local std = {
-  data = vim.fn.stdpath('data'),
-  config = vim.fn.stdpath('config')
-}
+local package_manager = require('manager.lazy')
 
-vim.g.mapleader = " "
-vim.g.maplocalleader = ","
+config:before()
 
-mngr:load()
+package_manager:load()
+
+config:setup()
+
+config:after()
