@@ -2,17 +2,16 @@
 -- configure neovim User Interface elements
 -- ---------------------------------------------------------------------------
 
----@class Config:Setup:Ui
-local M = {}
-M.__index = M
+---@class UiSetupConfig
+local UiSetupConfig = {}
 
-setmetatable( M, { __call = function (self,...)
-  return M:new(...)
-end
+setmetatable( UiSetupConfig, { 
+  __index = UiSetupConfig,
+  __call = function (self,...) return UiSetupConfig:new(...) end
 })
 
-function M:new(opts)
-  local opts = opts or {}
+function UiSetupConfig:new(opts)
+  local options = opts or {}
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
   -- Enable modelines in files
@@ -34,7 +33,7 @@ function M:new(opts)
 
   -- Display completion matches in the status line
   vim.opt.wildmenu = true
-  -- Use fuzzy search, and a Pop-Up Menu
+  -- Use fuzzy search, and a Pop-Up UiSetupConfigenu
   vim.opt.wildoptions = { 'fuzzy', 'pum' }
   -- in list form to the longest match
   vim.opt.wildmode = { 'longest', 'full' }
@@ -46,7 +45,7 @@ function M:new(opts)
   -- Warn on shell commands when buffer modified
   vim.opt.warn = true
   --
-  vim.cmd.colorscheme(opts.colors.colorscheme)
+  vim.cmd.colorscheme(options.colors.colorscheme)
   -- #region gui options
   vim.opt.termguicolors = true
   vim.opt.background = 'dark'
@@ -55,9 +54,8 @@ function M:new(opts)
   vim.opt.pumblend = 8
 
   if vim.g.neovide then
-
-    vim.opt.guifont = opts.fonts.gui
-    M.setup_neovide()
+    vim.opt.guifont = options.fonts.gui
+    UiSetupConfig.setup_neovide()
   else
     vim.opt.guifont = 'CommitMono Nerd Font Mono:h11'
   end
@@ -80,10 +78,10 @@ function M:new(opts)
 end
 
 ---Configuration for neovide, a "gui" for neovim
-function M.setup_neovide()
+function UiSetupConfig:setup_neovide()
   -- g:neovide_transparency should be 0 if you want to unify transparency of
   -- content and title bar.
-  vim.g.neovide_transparency = 0.95
+  vim.g.neovide_opacity = 0.95
   vim.g.transparency = 0.95
   -- How long it takes position animations such as vsplit
   vim.g.neovide_position_animation_length = 0.2
@@ -112,7 +110,13 @@ function M.setup_neovide()
   vim.g.neovide_cursor_vfx_particle_phase = 2.0
   -- for railgun set the rotation speed
   vim.g.neovide_cursor_vfx_particle_curl = 2.0
+
+
+  vim.g.neovide_padding_top = 0
+  vim.g.neovide_padding_bottom = 0
+  vim.g.neovide_padding_right = 0
+  vim.g.neovide_padding_left = 0
 end
 
 
-return M
+return UiSetupConfig

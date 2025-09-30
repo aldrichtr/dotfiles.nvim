@@ -22,13 +22,15 @@
 -- #endregion which-key wk.Spec
 
 ---@class Keybindings
-local M = {}
-M.__index = M
+local KeybindingsSetupConfig = {}
 
-setmetatable(M, { __call = function(_, ...) return M:new(...) end })
+setmetatable(KeybindingsSetupConfig, {
+  __index = KeybindingsSetupConfig,
+  __call = function(_, ...) return KeybindingsSetupConfig:new(...) end 
+})
 
 
-function M:new(opts)
+function KeybindingsSetupConfig:new(opts)
   opts = opts or require('profile.default.options')
   local utils = require('util')
 
@@ -39,7 +41,7 @@ function M:new(opts)
   local conform = require('conform')
   local bufferline = require('bufferline')
   -- ----------------------------------------------------------------------------------------------------------------
-  -- Mappings start here
+  -- KeybindingsSetupConfigappings start here
   whichkey.add({
     -- #region "Global" keys
     {
@@ -55,7 +57,7 @@ function M:new(opts)
       {
         'Y',
         'y$',
-        desc = 'Map Y to yank until EOL, rather than act as yy',
+        desc = 'KeybindingsSetupConfigap Y to yank until EOL, rather than act as yy',
       },
 
       { '<A-Down>', '<cmd>move +1<cr>==', desc = 'Move line down' },
@@ -472,4 +474,4 @@ end
 -- ----------------------------------------------------------------------------------------------------------------
 -- #endregion Setup new keymaps (with which-key)
 
-return M
+return KeybindingsSetupConfig

@@ -1,8 +1,11 @@
 local Manager = require('manager')
 
 ---@class Mason : Manager
-local Mason = setmetatable({}, {__index = Manager})
-Mason.__index = Mason
+local Mason = {}
+setmetatable(Mason, {
+  __index = Mason,
+  __call = function(self, ...) return Mason:new(...) end
+})
 
 
 

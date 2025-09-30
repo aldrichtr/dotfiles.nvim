@@ -1,18 +1,15 @@
 -- after.lua
 -- Configure neovim after all plugins are loaded
 
-
-local try = require('util').try
-local std  = require('std')
-
-
-local M = {}
-M.__index = M
+local AfterConfig = {}
 
 -- Run the main() method when required
-setmetatable( M , { __call = function (self, ...) return M:main(...) end })
+setmetatable( AfterConfig , {
+  __index = AfterConfig,
+  __call = function (self, ...) return AfterConfig:new(...) end
+})
 
-function M:main(opts)
+function AfterConfig:new(opts)
 end
 
-return M
+return AfterConfig

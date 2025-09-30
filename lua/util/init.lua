@@ -2,15 +2,23 @@
 
 local M = {}
 
----Attempt to load ('require') a module with error handling
+---Attempt to require a module with error handling
 ---@param mod string dot-separated path to module
----@return any
+---@return mod|nil, error
+---``` lua
+--- local mod = try('util')
+--- if not mod then
+---   -- mod is the error
+--- end
+--- ```
 function M.try(mod)
   local ok, mod_or_err = pcall(require, mod)
-  if not ok then
+  if ok then
+    return mod_or_err
+  else
     vim.notify('Error loading module ' .. mod .. "': " .. mod_or_err)
+    return nil, mod_or_err
   end
-  return mod_or_err
 end
 
 ---```lua
@@ -50,22 +58,22 @@ end
 --- @retur
 function should_import(opts)
   local ext = opts.extension or 'lua'
-	ext = ext .. '$'
+  ext = ext .. '$'
   local fbase = vim.fs.basename(opts.path)
   local fext  = vim.fn.fnamemodify(opts.path, ':e')
-	-- Start out expecting the file to match
-	local is_matched = true
-	if not string.match(fext, ext) then
-		is_matched = false
-	else
-		for _, pattern in ipairs(opts.exclude) do 
-			if fbase:match(pattern) then
-				is_matched = false
-				break
-			end
-		end
-	end
-	return is_matched
+  -- Start out expecting the file to match
+  local is_matched = true
+  if not string.match(fext, ext) then
+    is_matched = false
+  else
+    for _, pattern in ipairs(opts.exclude) do
+      if fbase:match(pattern) then
+        is_matched = false
+        break
+      end
+    end
+  end
+  return is_matched
 end
 
 

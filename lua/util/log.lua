@@ -1,12 +1,14 @@
 -- log.lua
 --
 -- Inspired by rxi/log.lua
--- Modified by tjdevries and can be found at github.com/tjdevries/vlog.nvim
+-- Modified by tjdevries and can be found at https://github.com/tjdevries/vlog.nvim
 --
 -- This library is free software; you can redistribute it and/or modify it
 -- under the terms of the MIT license. See LICENSE for details.
 
 -- User configuration section
+local path = require('util.path')
+
 local default_config = {
   -- Name of the plugin. Prepended to log messages
   plugin = 'nvim.init',
@@ -93,7 +95,9 @@ log.new = function(config, standalone)
 
     local msg = message_maker(...)
     local info = debug.getinfo(2, "Sl")
-    local lineinfo = info.short_src .. ":" .. info.currentline
+    -- normalize some path text
+    local src = info.short_src:gsub('\\', '/'):gsub(".*/Roaming/nvim/", "")
+    local lineinfo = src .. ":" .. info.currentline
 
     -- Output to console
     if config.use_console then

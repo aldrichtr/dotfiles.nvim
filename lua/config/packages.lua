@@ -5,13 +5,13 @@ local M = {
   -- #region colorschemes
   require('packages.colorscheme.melange'),
   require('packages.colorscheme.rose-pine'),
-  require('packages.colorscheme.tartessos'),
   require('packages.colorscheme.darcula-dark'),
   require('packages.colorscheme.grail'),
   require('packages.colorscheme.no-clown-fiesta'),
   -- #endregion colorschemes
 
   require('packages.bufferline'),
+  require('packages.cmp'),
   require('packages.compl'),
   require('packages.lualine'),
   -- Decorators

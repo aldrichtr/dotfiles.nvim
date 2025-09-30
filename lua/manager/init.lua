@@ -2,24 +2,23 @@
 local try = require('util').try
 local log = require('util.log')
 
-local _name = 'manager'
 ---@class Manager
-local Manager = { name = _name } -- Table that represents the Manager
-local class = {
-  __index = Manager, -- Failed lookups to the object should fall back to the class (static method)
-  __call = function(m, ...) 
-    return m:new(...) 
-  end 
-}
--- Call new() when the Class is required
-setmetatable( Manager, class )
+local Manager = {}
+setmetatable( Manager, {
+  __index = Manager,
+  __call = function (self, ...) return Manager:new(...) end
+})
 
-function Manager:new()
+function Manager:new(opt)
   log.debug("Creating new manager")
-  local m = { name = _name }
-  setmetatable(m, self)
+  local options = opt or try('options') or {}
+  local instance = {
+    name = 'manager',
+    options = options
+  }
+  setmetatable(instance, self)
   self.__index = self
-  return m
+  return instance
 end
 
 ---Create a new Manager of the given type (Manager Factory)

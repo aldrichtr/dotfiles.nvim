@@ -1,17 +1,22 @@
+local try = require('util').try
+local log = require('util.log')
 
-local M = {}
-M.__index = M
+local SetupConfig = {}
 
-setmetatable(M, { __call = function(self,...) return M:new(...) end })
+setmetatable(SetupConfig, {
+  __index = SetupConfig,
+  __call = function(self,...) return SetupConfig:new(...) end 
+})
 
-function M:new(opts)
-  local opts = opts or { ui = {} }
-  require('config.setup.keybindings')(opts)
-  require('config.setup.shell')(opts)
-  require('config.setup.ui')(opts.ui)
-  require('config.setup.autocmds')(opts)
+function SetupConfig:new(opts)
+  local options = opts or { ui = {} }
+  log.debug("Running Config::Setup")
+    require('config.setup.keybindings')
+    require('config.setup.autocmds')
+    require('config.setup.ui')(options.ui)
+    require('config.setup.shell')
   -- ------------------------------------------------------------------------
-  vim.o.fileformat = 'unix'
+  vim.o.fileformats = 'unix'
   -- #region Buffer elements
 
   -- Enable modelines in files
@@ -63,4 +68,4 @@ function M:new(opts)
 end
 
 
-return M
+return SetupConfig

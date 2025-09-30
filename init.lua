@@ -5,7 +5,7 @@ local options = require('options')
 local config = require('config')
 config.options = options
 
-local package_manager = require('manager.lazy')
+local package_manager = require('manager.lazy')(options.manager)
 
 config:before()
 
