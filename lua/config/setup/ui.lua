@@ -2,16 +2,14 @@
 -- configure neovim User Interface elements
 -- ---------------------------------------------------------------------------
 
----@class UiSetupConfig
-local UiSetupConfig = {}
-
-setmetatable( UiSetupConfig, { 
-  __index = UiSetupConfig,
-  __call = function (self,...) return UiSetupConfig:new(...) end
+local M = {}
+setmetatable(M, {
+  __index = M,
+  __call  = function(cls, ...) return cls:init(...) end
 })
 
-function UiSetupConfig:new(opts)
-  local options = opts or {}
+function M:init(opts)
+  local options = opts.ui or {}
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
   -- Enable modelines in files
@@ -55,7 +53,7 @@ function UiSetupConfig:new(opts)
 
   if vim.g.neovide then
     vim.opt.guifont = options.fonts.gui
-    UiSetupConfig.setup_neovide()
+    M:setup_neovide()
   else
     vim.opt.guifont = 'CommitMono Nerd Font Mono:h11'
   end
@@ -78,7 +76,7 @@ function UiSetupConfig:new(opts)
 end
 
 ---Configuration for neovide, a "gui" for neovim
-function UiSetupConfig:setup_neovide()
+function M:setup_neovide()
   -- g:neovide_transparency should be 0 if you want to unify transparency of
   -- content and title bar.
   vim.g.neovide_opacity = 0.95
@@ -119,4 +117,4 @@ function UiSetupConfig:setup_neovide()
 end
 
 
-return UiSetupConfig
+return M

@@ -1,16 +1,13 @@
+local path = require('util.path')
 
-local M = {}
+local load = {}
 
-
-function M.dir(opts)
-  local directory
-  local match
-  local exclude
-  if opts['dir'] then
-    directory = opts.dir
-  else
-    directory = opts
+function load.all(find, ...)
+  local files = path.find(find)
+  for _,file in ipairs(files) do
+    local mod = path.convert_to_module(file)
+    require(mod)(...)
   end
-  match = opts.match or "(.+).lua$"
 end
-return M
+
+return load

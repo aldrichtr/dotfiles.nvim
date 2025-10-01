@@ -1,5 +1,6 @@
 -- Keybindings for neovim.  Requires whichkey.
 
+local path = require('util.path')
 -- #region which-key wk.Spec
 --[[
   - [1]: (string) lhs (required)
@@ -16,23 +17,19 @@
     When desc, group, or icon are functions, they are evaluated every time the popup is shown.
 
     The expand property allows to create dynamic mappings. Only functions as rhs are supported for dynamic mappings.
-
-   ]]
---
+]] --
 -- #endregion which-key wk.Spec
 
----@class Keybindings
-local KeybindingsSetupConfig = {}
-
-setmetatable(KeybindingsSetupConfig, {
-  __index = KeybindingsSetupConfig,
-  __call = function(_, ...) return KeybindingsSetupConfig:new(...) end 
+local M = {}
+setmetatable(M, {
+  __index = M,
+  __call  = function(cls, ...) return cls:init(...) end
 })
 
 
-function KeybindingsSetupConfig:new(opts)
-  opts = opts or require('profile.default.options')
-  local utils = require('util')
+
+function M:init(opts)
+  log.debug("Loading Keybindings")
 
   local whichkey = require('which-key')
   local builtin = require('telescope.builtin')
@@ -41,7 +38,7 @@ function KeybindingsSetupConfig:new(opts)
   local conform = require('conform')
   local bufferline = require('bufferline')
   -- ----------------------------------------------------------------------------------------------------------------
-  -- KeybindingsSetupConfigappings start here
+  -- Mappings start here
   whichkey.add({
     -- #region "Global" keys
     {
@@ -57,7 +54,7 @@ function KeybindingsSetupConfig:new(opts)
       {
         'Y',
         'y$',
-        desc = 'KeybindingsSetupConfigap Y to yank until EOL, rather than act as yy',
+        desc = 'Map Y to yank until EOL, rather than act as yy',
       },
 
       { '<A-Down>', '<cmd>move +1<cr>==', desc = 'Move line down' },
@@ -312,12 +309,12 @@ function KeybindingsSetupConfig:new(opts)
       { '<leader>sB', '<cmd>Telescope scope buffers<CR>', desc = 'Search for buffers in current tab' },
       {
         '<leader>sc',
-        function() builtin.find_files({ cwd = opts.paths.config }) end,
+        function() builtin.find_files({ cwd = path.config }) end,
         desc = 'Search for files in the nvim config directory',
       },
       {
         '<leader>sd',
-        function() builtin.find_files({ cwd = opts.paths.dotfiles }) end,
+        function() builtin.find_files({ cwd = path.dotfiles }) end,
         desc = 'Search for files in the dotfiles directory',
       },
       { '<leader>sg', function() builtin.live_grep() end, desc = 'select from grep results in the current file' },
@@ -474,4 +471,4 @@ end
 -- ----------------------------------------------------------------------------------------------------------------
 -- #endregion Setup new keymaps (with which-key)
 
-return KeybindingsSetupConfig
+return M

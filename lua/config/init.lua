@@ -1,58 +1,43 @@
 -- This is the main entry point to my customized neovim configuration
---
-local try = require('util').try
-local log = require('util.log')
+
+local path = require('util.path')
+local load = require('util.load')
 
 ---@class Config
-local Config = { name = '', options = {}}
-setmetatable( Config , {
-  __index = Config,
-  __call = function (self, ...) return Config:new(...) end
-})
+local Config = class('Config')
 
-function Config:new(opts)
-  local instance = {}
-  instance = {
-    name = 'Default',
-    options = opts or try('options')
-  }
-  setmetatable(instance, self)
-  return instance
-end
 
--- --------------------------------------------------------------------------
--- Config:before is intended to be loaded before the package manager, and any
--- plugins.
--- --------------------------------------------------------------------------
-function Config:before(opts)
-  opts = opts or self.options
-  try('config.before')(opts)
+function Config:initialize(opts)
+  log.debug("Initializing Config")
+  self.name = 'Default'
+  self.path = path.caller()
+  self.manager = {}
+  self.stages = { 'before', 'manager', 'setup', 'after' } 
+  self.options = require('options')
+  if next(opts) ~= nil then
+    self.options = vim.tbl_deep_extend('force', self.options, opts)
+  end
 end
 
--- --------------------------------------------------------------------------
--- Config:setup is intended to be the main configuration settings, called just
--- after plugins are loaded.
--- --------------------------------------------------------------------------
-function Config:setup(opts)
-  opts = opts or self.options
-  try('config.setup')(opts)
+
+function Config:apply(stages)
+  local stages = stages or self.stages
+  for _, stage in ipairs(stages) do
+    if stage:match('manager') then
+      self.manager:load()
+    else
+      local child = path.join(vim.fs.dirname(self.path), stage)
+      log.debug("Getting ready to apply settings in ", child)
+      if vim.uv.fs_stat(child) then
+        load.all({dir = child},self.options)
+      else
+        log.warn("Config Stage", stage, "is not a defined stage")
+      end
+    end
+  end
 end
 
--- --------------------------------------------------------------------------
--- Config:setup is intended to be the main configuration settings, called just
--- after plugins are loaded.
--- --------------------------------------------------------------------------
-function Config:lsp(opts)
-  opts = opts or self.options
-  try('config.lsp')(opts)
-end
--- --------------------------------------------------------------------------
--- Config:after is intended to be loaded after all plugins and other settings
--- are loaded.  The final config before control is turned over to the user.
--- --------------------------------------------------------------------------
-function Config:after(opts)
-  opts = opts or self.options
-  try('config.after')(opts)
-end
+
 
 return Config
+

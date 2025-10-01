@@ -47,8 +47,9 @@ local unpack = unpack or table.unpack
 log.new = function(config, standalone)
   config = vim.tbl_deep_extend("force", default_config, config)
 
-  local outfile = string.format('%s/%s.log', vim.api.nvim_call_function('stdpath', {'data'}), config.plugin)
+  -- local outfile = string.format('%s/%s.log', vim.api.nvim_call_function('stdpath', {'data'}), config.plugin)
 
+  local outfile = string.format('%s/%s.log', path.data, config.plugin)
   local obj
   if standalone then
     obj = log
@@ -95,8 +96,11 @@ log.new = function(config, standalone)
 
     local msg = message_maker(...)
     local info = debug.getinfo(2, "Sl")
-    -- normalize some path text
-    local src = info.short_src:gsub('\\', '/'):gsub(".*/Roaming/nvim/", "")
+    -- I added this to shorten the path to the file to be relative to
+    -- the nvim config directory
+    -- first I normalize the directory separator to `/`, and then
+    -- remove everything up to the `/nvim/`
+    local src = info.short_src:gsub('\\', '/'):gsub(".*/nvim/", "")
     local lineinfo = src .. ":" .. info.currentline
 
     -- Output to console

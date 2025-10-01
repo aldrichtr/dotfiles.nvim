@@ -1,18 +1,10 @@
 
-local try = require('util').try
 local path = require('util.path')
-local log  = require('util.log')
 
 local Manager = require('manager')
 
----@class LazyManager
-local Lazy = {}
-setmetatable( Lazy, {
-  __index = Lazy,
-  __call = function (self, ...) return Lazy:new(...) end
-})
+local Lazy = class('Lazy', Manager)
 
--- @class LazyOptions
 local _defaults = {
   root = path.join(path.data, 'lazy'),
   install = {
@@ -23,24 +15,15 @@ local _defaults = {
   },
   setup = { "packages" }
 }
--- #endregion Default options
 
-
-function Lazy:new(opt)
+function Lazy:initialize(opt)
   log.debug('Initializing manager - lazy')
-  local options = opt or _defaults
-  local instance = Manager:new()
-
-  instance.name = 'lazy'
-  instance.options = options
-  setmetatable(instance, self)
-  self.__index = self
-  return instance
+  self.options = _defaults
+  if next(opt) ~= nil then
+    self.options = vim.tbl_deep_extend('force', self.options, opt)
+  end
 end
 
-
----Load the module with the given options
----@param opts ManagerOptions
 function Lazy:load(opts)
   local options = opts or self.options
 
@@ -50,16 +33,12 @@ function Lazy:load(opts)
 
   vim.opt.runtimepath:prepend(options.install.path)
 
-  local lazy_nvim = try('lazy')
-  if lazy_nvim then
-    lazy_nvim.setup(options.setup)
-  end
+  local lazy_nvim = require('lazy')
+  lazy_nvim.setup(options.setup)
 end
 
-
 function Lazy:isInstalled()
-  local options = self.options or _defaults
-  if vim.fn.isdirectory(options.install.check) then
+  if vim.fn.isdirectory(self.options.install.check) then
     log.debug("[Manager.Lazy] - it is installed")
     return 1
   else
@@ -69,10 +48,8 @@ function Lazy:isInstalled()
 
 end
 
----Install the lazy.nvim package manager
----@param opts? ManagerOptions
 function Lazy:install(opts)
-  local options = self.options.install or _defaults.install
+  local options = self.options.install
   log.debug("[Manager.Lazy] Installing the lazy.nvim package manager")
   local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none', 
     '--branch=stable', options.repo, options.path })

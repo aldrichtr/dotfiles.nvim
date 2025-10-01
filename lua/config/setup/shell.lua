@@ -1,11 +1,11 @@
 
 local M = {}
-M.__index = M
+setmetatable(M, {
+  __index = M,
+  __call  = function(cls, ...) return cls:init(...) end
+})
 
-setmetatable(M, { __call = function(self, ...) return M:new(...) end })
----Setup the shell options
----@param opts any
-function M:new(opts)
+function M:init(opts)
   if vim.fn.executable('pwsh') == 1 then
     vim.opt.shell = 'pwsh'
   elseif vim.fn.executable('powershell') then

@@ -1,16 +1,21 @@
+_G.log = require('util.log')
 
--- Some often used options are set here, such as colorscheme, font, etc
+local path = require('util.path')
+local shared_lib_dir = path.join(path.LocalAppData, 'lua', 'share', 'lua', '5.1')
+
+package.path = package.path .. ';' .. shared_lib_dir .. '/?.lua'
+
+_G.class = require('middleclass')
+
 local options = require('options')
+local Config = require('config')
+local Manager = require('manager.lazy')
 
-local config = require('config')
-config.options = options
+local config = Config:new(options)
 
-local package_manager = require('manager.lazy')(options.manager)
+config.manager = Manager:new(options.manager)
 
-config:before()
+config:apply()
 
-package_manager:load()
-
-config:setup()
-
-config:after()
+-- ------------------------------------------------------------------------------
+log.debug("Initialization complete")

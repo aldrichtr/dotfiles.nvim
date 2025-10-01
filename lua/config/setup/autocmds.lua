@@ -1,9 +1,12 @@
+
 local M = {}
-M.__index = M
 
-setmetatable(M, { __call = function(_, ...) return M:new(...) end })
+setmetatable(M, {
+  __index = M,
+  __call = function(_, ...) return M:init(...) end 
+})
 
-function M:new(opts)
+function M:init(opts)
   local create = vim.api.nvim_create_autocmd
   local cmds = {
     {
