@@ -1,0 +1,443 @@
+{
+  // SECTION Comment blocks
+
+  "Code section comment block": {
+    "prefix": [ ",comment", "<#" ],
+    "description": "block-comment section with separator lines",
+    "body": [
+      "<# [markdown]",
+      " #",
+      " # ${1:Comment Title}",
+      " #",
+      " # $0",
+      " #>"
+    ]
+  },
+
+  "Debug region markers": {
+    "prefix": ",debug-markers",
+    "description": "Add a dash marker to a region of debug messages",
+    "body": [
+      "Write-Debug \"<\\$('-' * 80)\"",
+      "Write-Debug \"${0:$TM_SELECTED_TEXT}\"",
+      "Write-Debug \"\\$('-' * 80)>\""
+    ]
+  },
+  // !SECTION
+
+  // SECTION Functions
+
+  "New function - full": {
+    "prefix": ",function-full",
+    "description": "Insert an advanced function with all parts",
+    "isFileTemplate": true,
+    "body": [
+      "",
+      "function ${1:$TM_FILENAME_BASE} {",
+      "  <#",
+      "  .SYNOPSIS",
+      "    ${2:A short one-line action-based description, e.g. 'Tests if a function is valid'}",
+      "  #>",
+      "  [CmdletBinding()]",
+      "  param(",
+      "  )",
+      "  begin {",
+      "    \\$self = \\$MyInvocation.MyCommand",
+      "    Write-Debug \"`n\\$('-' * 80)`n-- Begin \\$(\\$self.Name)`n\\$('-' * 80)\"",
+      "  }",
+      "  process {",
+      "    ${0:$TM_SELECTED_TEXT}",
+      "  }",
+      "  end {",
+      "    Write-Debug \"`n\\$('-' * 80)`n-- End \\$(\\$self.Name)`n\\$('-' * 80)\"",
+      "  }",
+      "}"
+    ]
+
+  },
+
+  "New advanced function": {
+    "prefix": ",function",
+    "description": "New function based on the file name",
+    "body": [
+      "function ${1:$TM_FILENAME_BASE} {",
+      "  [CmdletBinding()]",
+      "  param(",
+      "  )",
+      "$0",
+      "}"
+    ]
+  },
+
+  "Function blocks (begin process end)": {
+    "prefix": ",begin-process-end",
+    "description": "Add begin, process, and end blocks to the cmdlet",
+    "body": [
+      "begin {",
+      "  \\$self = \\$MyInvocation.MyCommand",
+      "  Write-Debug \"`n\\$('-' * 80)`n-- Begin \\$(\\$self.Name)`n\\$('-' * 80)\"",
+      "}",
+      "process {",
+      "  ${0:$TM_SELECTED_TEXT}",
+      "}",
+      "end {",
+      "  Write-Debug \"`n\\$('-' * 80)`n-- End \\$(\\$self.Name)`n\\$('-' * 80)\"",
+      "}"
+    ]
+  },
+
+  "Function blocks (begin process end clean)": {
+    "prefix": ",begin-process-end-clean",
+    "description": "Add begin, process, and end blocks to the cmdlet",
+    "body": [
+      "begin {",
+      "  \\$self = \\$MyInvocation.MyCommand",
+      "  Write-Debug \"`n\\$('-' * 80)`n-- Begin \\$(\\$self.Name)`n\\$('-' * 80)\"",
+      "}",
+      "process {",
+      "  ${0:$TM_SELECTED_TEXT}",
+      "}",
+      "end {",
+      "  Write-Debug \"`n\\$('-' * 80)`n-- End \\$(\\$self.Name)`n\\$('-' * 80)\"",
+      "}",
+      "clean {",
+      "  Write-Debug \"`n\\$('-' * 80)`n-- Clean \\$(\\$self.Name)`n\\$('-' * 80)\"",
+      "}"
+    ]
+  },
+  // !SECTION
+
+  // SECTION Parameters
+
+
+  "Parameter definition": {
+    "prefix": [",param"],
+    "description": "formatted parameter template",
+    "body": [
+      "# ${1:parameter help description}",
+      "[Parameter(",
+      ")]",
+      "[${2:Type}]\\$${3:Name}$0"
+    ]
+  },
+
+  "Add a Recurse Parameter": {
+    "prefix": [ ",param-recurse" ],
+    "description": "Insert a Recurse switch parameter",
+    "body": [
+      "# ${1:Optionally recurse into children}",
+      "[Parameter(",
+      ")]",
+      "[switch]\\$Recurse${0}"
+    ]
+  },
+
+  "Add a Force Parameter": {
+    "prefix": [ ",param-force" ],
+    "description": "Insert a Force switch parameter",
+    "body": [
+      "# Force the completion of the operation",
+      "[Parameter(",
+      ")]",
+      "[switch]\\$Force"
+    ]
+  },
+
+  "Add a Path Parameter": {
+    "prefix": [ ",param-path" ],
+    "description": "Insert a -Path parameter",
+    "body": [
+      "# Specifies a path to one or more locations.",
+      "[Parameter(",
+      "Position = 0,",
+      "ValueFromPipeline,",
+      "ValueFromPipelineByPropertyName",
+      ")]",
+      "[Alias('PSPath')]",
+      "[string[]]\\$Path"
+    ]
+  },
+
+  "Add a Switch Parameter": {
+    "prefix": [ ",param-switch" ],
+    "description": "Insert a Switch type parameter",
+    "body": [
+      "# ${1:help message}",
+      "[Parameter(",
+      ")]",
+      "[switch]\\$${2}"
+    ]
+  },
+
+  "Add an Arguments Parameter": {
+    "prefix": [",param-args"],
+    "description": "Insert a parameter for Remaining Arguments",
+    "body": [
+      "# Collect the remaining arguments",
+      "[Parameter(",
+      "  ValueFromRemainingArguments",
+      ")]",
+      "[Object[]]\\$Arguments${0}"
+    ]
+  },
+  // !SECTION Parameters
+
+  // SECTION Help
+  "Comment help - full": {
+    "prefix": [
+      ",help.function",
+      ",help.full"
+    ],
+    "description": "Comment-based help for an advanced function. More: Get-Help about_Comment_Based_Help",
+    "body": [
+      "<#",
+      ".SYNOPSIS",
+      "  ${1:A short one-line action-based description, e.g. 'Tests if a function is valid'}",
+      ".DESCRIPTION",
+      "  ${2:A longer description of the function, its purpose, common use cases, etc.}",
+      "#>"
+    ]
+  },
+
+  "Comment help - basic": {
+    "prefix": [
+      ",help.basic"
+    ],
+    "description": "Comment-based help for an advanced function. More: Get-Help about_Comment_Based_Help",
+    "body": [
+      "<#",
+      ".SYNOPSIS",
+      "  ${0:A short one-line action-based description, e.g. 'Tests if a function is valid'}",
+      "#>"
+    ]
+  },
+
+  "Comment help - synopsis": {
+    "prefix": ",help.synopsis",
+    "description": "comment based help section: synopsis",
+    "body": [
+      ".SYNOPSIS",
+      "  $0"
+    ]
+  },
+  "Comment help - description": {
+    "prefix": ",help.description",
+    "description": "comment based help section: description",
+    "body": [
+      ".DESCRIPTION",
+      "  $0"
+    ]
+  },
+  "Comment help - example": {
+    "prefix": [ ",help.example" ],
+    "description": "comment based help section: example",
+    "body": [
+      ".EXAMPLE",
+      "  ${TM_FILENAME_BASE} $0"
+    ]
+  },
+  "Comment help - notes": {
+    "prefix": ",help.notes",
+    "description": "comment based help section: notes",
+    "body": [
+      ".NOTES",
+      "  $0"
+    ]
+  },
+  // !SECTION Help
+
+  // SECTION Pester
+
+  "Pester for Mandatory Parameter": {
+    "prefix": ",pester-test-mandatory-param",
+    "description": "Pester Test for Parameter",
+    "body": [
+      "It \"${1:FunctionName} Should have a mandatory parameter ${2:ParameterName}\" {",
+      "  (Get-Command ${1:FunctionName}).Parameters['${2:ParameterName}'].Attributes.Mandatory | Should -BeTrue",
+      "}"
+    ]
+  },
+
+  "Pester test for Parameter": {
+    "prefix": ",pester-test-param",
+    "description": "Pester Test for Parameter",
+    "body": [
+      "It \"${1:FunctionName} Should have a parameter ${2:ParameterName}\" {",
+      "  (Get-Command ${1:FunctionName}).Parameters['${2:ParameterName}'].Count | Should -Be 1",
+      "}"
+    ]
+  },
+
+  // !SECTION Pester
+
+  // SECTION Write Message
+  "Write Debug Message": {
+    "prefix": ",debug",
+    "description": "Insert a Write-Debug message",
+    "body": "Write-Debug \"${0:$TM_SELECTED_TEXT}\""
+  },
+
+  "Write Warning Message": {
+    "prefix": ",warning",
+    "description": "Insert a Write-Warning message",
+    "body": "Write-Warning \"${0:$TM_SELECTED_TEXT}\""
+  },
+
+  "Write Verbose Message": {
+    "prefix": ",verbose",
+    "description": "Insert a Write-Verbose message",
+    "body": "Write-Verbose \"${0:${TM_SELECTED_TEXT}}\""
+  },
+
+  "Write Build Message": {
+    "prefix": ",build",
+    "description": "Insert a Write-Build message",
+    "body": "Write-Build DarkBlue \"${0:${TM_SELECTED_TEXT}}\""
+  },
+
+
+  "Write Host Message": {
+    "prefix": [ ",host" ],
+    "description": "Insert a Write-Host message",
+    "body": "Write-Host \"${0:${TM_SELECTED_TEXT}}\" ${1|-Foreground Blue,-Foreground BrightBlack,-Foreground Green,-Foreground Cyan, |}"
+  },
+
+  // !SECTION Write Message
+
+  "Regex Escape string": {
+    "prefix": [ ",escape", ",regex-escape" ],
+    "description": "Insert the regex.escape function",
+    "body": [
+      "[regex]::Escape(${TM_SELECTED_TEXT/[\\\\]//gm})"
+    ]
+  },
+
+  // SECTION If and If not
+  "If null variable": {
+    "prefix": ",if-null",
+    "description": "if null not equal to",
+    "body": [
+      "if (\\$null -eq ${1}) {",
+      "  $0",
+      "${2|},} else {\n}|}"
+    ]
+  },
+
+  "If not null variable": {
+    "prefix": ",if-null-not",
+    "description": "if null not equal to",
+    "body": [
+      "if (\\$null -ne ${1}) {",
+      "  $0",
+      "${2|},} else {\n}|}"
+    ]
+  },
+
+  "If Parameter Exists": {
+    "prefix": ",if-param",
+    "description": "Insert if psboundparameter containskey",
+    "body": [
+      "if (\\$PSBoundParameters.ContainsKey('$1')) {",
+      "$0",
+      "${2|},} else {\n}|}"
+    ]
+  },
+  "If Parameter does not exist": {
+    "prefix": ",if-param-not",
+    "description": "Insert if not PSBoundParameter.ContainsKey",
+    "body": [
+      "if (-not (\\$PSBoundParameters.ContainsKey('$1'))) {",
+      "$0",
+      "${2|},} else {\n}|}"
+    ]
+  },
+  "Is Null or Empty": {
+    "prefix": "IsNullorEmpty",
+    "description": "Insert is null or empty",
+    "body": [
+      "[string]::IsNullorEmpty(${1:${TM_SELECTED_TEXT}})"
+    ]
+  },
+  "If variable is null or empty": {
+    "prefix": ",if-null-or-empty",
+    "description": "Insert string test for null or empty",
+    "body": [
+      "if ([string]::IsNullorEmpty(${1:${TM_SELECTED_TEXT}})) {",
+      "$0",
+      "${2|},} else {\n}|}"
+    ]
+  },
+
+  "If variable is not null or empty": {
+    "prefix": ",if-null-or-empty-not",
+    "description": "Insert string test for null or empty",
+    "body": [
+      "if (-not ([string]::IsNullorEmpty(${1:${TM_SELECTED_TEXT}}))) {",
+      "$0",
+      "${2|},} else {\n}|}"
+    ]
+  },
+  // !SECTION If and If not
+
+  "Require Module": {
+    "prefix": ",require-module",
+    "description": "Insert #Requires -Module",
+    "body": "#Requires -Modules @{ ModuleName = \"${1:Module Name}\"; ${2|ModuleVersion,RequiredVersion,MaximumVersion|} = \"${3:Module Version}\"}"
+  },
+
+  "Foreach key": {
+    "prefix": [ ",foreach-key" ],
+    "description": "Insert a foreach loop of keys in the given hashtable",
+    "body": [
+      "foreach (\\$key in ${1:hashtable}.Keys) {",
+      "$0",
+      "}"
+    ]
+  },
+
+  "Using namespace": {
+    "prefix": ",ns",
+    "body": "using namespace"
+  },
+
+  "Throw terminating Error": {
+    "prefix": "throwTerminatingError",
+    "description": "Throw a terminating error, forwarding the original error",
+    "body": [
+      "\\$err = \\$_ # The original error",
+      "\\$message = ${0:$TM_SELECTED_TEXT}",
+      "\\$exceptionText = ( @(\\$message, \\$err.ToString()) -join \"`n\")",
+      "\\$newException = [Exception]::new(\\$exceptionText)",
+      "\\$eRecord = [System.Management.Automation.ErrorRecord]::new(",
+      "  \\$newException,",
+      "  \\$err.FullyQualifiedErrorId,",
+      "  \\$err.CategoryInfo.Category,",
+      "  \\$${1|TargetObject,null|}",
+      ")",
+      "\\$PSCmdlet.ThrowTerminatingError( \\$eRecord )"
+    ]
+  },
+
+  // SECTION Logging
+
+  "Logging start": {
+    "prefix": ",log-start",
+    "description": "Insert a start-fold marker in logging output",
+    "body": "Write-Debug '-- {{{ $0 ---------------------------------------------------------------'"
+  },
+  "Logging end": {
+    "prefix": ",log-end",
+    "description": "Insert a end-fold marker in logging output",
+    "body": "Write-Debug '-------------------------------------------------------------------------}}} --'"
+  },
+  "Logging region": {
+    "prefix": ",log-block",
+    "description": "Insert a start and end fold marker in logging output",
+    "body": [
+      "Write-Debug '-- {{{ $1 ---------------------------------------------------------------'",
+      "${0:$TM_SELECTED_TEXT}",
+      "Write-Debug '-------------------------------------------------------------------------}}} --'"
+    ]
+  }
+  // !SECTION Logging
+}

@@ -1,3 +1,6 @@
+local path = require('util.path')
+
+---@class LazySpec
 local M = {
   'L3MON4D3/LuaSnip',
 }
@@ -5,24 +8,22 @@ M.version = 'v2.*'
 -- install jsregexp (optional!).
 -- The downloaded make files need a little adjusting to work, so
 -- the build command calls a powershell script that does the compilation
-M.build = '& ' .. vim.fn.stdpath('config') .. '/luasnip-build.ps1'
+M.build = '& ' .. path.join( path.init, 'luasnip-build.ps1' )
 
 M.init = function()
-  local root = vim.fs.joinpath(vim.fn.stdpath('config'), 'snipppets')
+  -- TODO: I want to get this from the options, but this file is required
+  --       by options and so it causes a loop to require options here
+  local root = path.join(path.init, 'snipppets')
 
   -- load json format "vscode style" snippets
   require('luasnip.loaders.from_vscode').lazy_load({
-    paths = {
-      vim.fs.joinpath(root, 'vscode'),
-    },
+    paths = { path.join(root, 'vscode') }
   })
 
   -- load lua format "luasnip native" snippets
   require('luasnip.loaders.from_lua').lazy_load({
-      paths = {
-        vim.fs.joinpath(root, 'luasnip'),
-      },
-    })
+      paths = { path.join(root, 'lua') }
+  })
 end
 
 M.opts = {

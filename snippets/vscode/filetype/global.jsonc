@@ -1,0 +1,114 @@
+{
+    // --------------------------------------------------------------------------------
+    // #region File and Directory
+
+    "Line Index": {
+        "prefix": ",lineIndex",
+        "description": "The zero-based index of the current line",
+        "body": "$TM_LINE_INDEX"
+    },
+
+    "Line Number": {
+        "prefix": ",lineNumber",
+        "description": "The one-based number of the current line",
+        "body": "$TM_LINE_NUMBER"
+    },
+
+    "File Name": {
+        "prefix": ",fileName",
+        "description": "The name of the current file",
+        "body": "$TM_FILENAME"
+    },
+    "File Base Name": {
+        "prefix": ",fileBaseName",
+        "description": "The name of the current file without extension",
+        "body": "$TM_FILENAME_BASE"
+    },
+    "File Directory": {
+        "prefix": ",fileDirectory",
+        "description": "The directory of the current file",
+        "body": "$TM_DIRECTORY"
+    },
+    "File Path": {
+        "prefix": ",filePath",
+        "description": "The full path of the current file",
+        "body": "$TM_FILEPATH"
+    },
+    "File Relative Path": {
+        "prefix": ",fileRelativePath",
+        "description": "The relative (to the workspace) path of the current file",
+        "body": "$RELATIVE_FILEPATH"
+    },
+    "Workspace Name": {
+        "prefix": ",workspaceName",
+        "description": "The name of the current workspace",
+        "body": "$WORKSPACE_NAME"
+    },
+    "Workspace Path": {
+        "prefix": ",workspacePath",
+        "description": "The path of the current workspace",
+        "body": "$WORKSPACE_FOLDER"
+    },
+
+    // #endregion File and Directory
+    // --------------------------------------------------------------------------------
+
+
+    // --------------------------------------------------------------------------------
+    // #region Date and Time
+
+    "Current Date": {
+        "prefix": ",date",
+        "description": "The current date",
+        "body": "$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE"
+    },
+
+    "Current Date Long Format": {
+        "prefix": ",dateLong",
+        "description": "The current date in long format",
+        "body": "$CURRENT_DAY_NAME, $CURRENT_MONTH_NAME $CURRENT_DATE, $CURRENT_YEAR $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND"
+    },
+
+    "Current Time": {
+        "prefix": ",time",
+        "body": "$CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND"
+    },
+
+    "Current Time as Unix Epoch": {
+        "prefix": ",epoch",
+        "body": "$CURRENT_SECONDS_UNIX"
+    },
+
+    // #endregion Date and Time
+    // --------------------------------------------------------------------------------
+
+
+    "Todo comment": {
+        "prefix": [
+            "TODO",
+            ",todo"
+        ],
+        "description": "Insert a TODO: comment here",
+        "body": [
+            "$BLOCK_COMMENT_START TODO: $0",
+            "$BLOCK_COMMENT_END"
+        ]
+    },
+
+    "Region block": {
+        "prefix": [
+            ",region-block",
+            "region"
+        ],
+        "description": "Insert a region block",
+        "body": [
+            "\n$LINE_COMMENT --------------------------------------------------------------------------------",
+            "$LINE_COMMENT #region ${1:Region name}",
+            "\n",
+            "$TM_SELECTED_TEXT",
+            "\n",
+            "$LINE_COMMENT #endregion ${1}",
+            "$LINE_COMMENT --------------------------------------------------------------------------------\n",
+        ]
+    }
+}

@@ -7,29 +7,37 @@ local Path = {
 
   -- This is neovim's configuration directory, where init.lua lives
   -- $env:XDG_USER_CONFIG_DIR/nvim
-  init = vim.fn.stdpath('config'),
+  init = normalize(vim.fn.stdpath('config')),
   -- This is neovim's local directory, where packages, tools, and libraries are stored
   -- $env:XDG_USER_DATA_DIR/nvim-data
-  data = vim.fn.stdpath('data'),
+  data = normalize(vim.fn.stdpath('data')),
 
   -- Environmental paths (windows though)
   LocalAppData = normalize(vim.env.LOCALAPPDATA),
   AppData = normalize(vim.env.APPDATA),
-  Home = vim.env.HOME
+  Home = vim.env.HOME,
+  Programs = normalize(vim.env.ProgramFiles)
 }
 
 Path.dotfiles = Path.join(Path.Home, '.dotfiles')
 
 Path.lua = Path.join(Path.init, 'lua')
--- TODO: This might be confusing because it seems like stdpath('config') should be `config`
+-- TODO: This might be confusing because it seems like stdpath('config') should be `config` but it is the path to the main config of my init `lua/config`
 Path.config = Path.join(Path.lua, 'config')
 
-Path.lsp = { root = Path.join(vim.env.LOCALAPPDATA, 'lsp') }
+Path.lsp = { root = Path.join(vim.env.LOCALAPPDATA, 'lsp'),
+             logs = Path.join(Path.data, 'logs') }
 
 Path.lsp['lua'] = Path.join(Path.lsp.root, 'lua')
+Path.lsp['pses'] = Path.join(Path.lsp.root, 'pses')
+
+
+function Path.exists(p)
+	return vim.uv.fs_stat(p)
+end
 
 -- ------------------------------------------------------------------------------
----@param string fully-qualified path to a lua file
+---@param file string fully-qualified path to a lua file
 ---@return string "dot-separated" path to file
 function Path.convert_to_module(file)
   local root = normalize(Path.lua)

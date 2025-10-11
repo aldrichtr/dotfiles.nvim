@@ -8,16 +8,37 @@ M.dependencies = {
   'nvim-tree/nvim-web-devicons',
 }
 M.init = function()
-require('telescope').register_extension('aerial')
+  local telescope = require('telescope')
+  telescope.setup({
+    extensions = {
+      aerial = {
+        -- Set the width of the first two columns (the second
+        -- is relevant only when show_columns is set to 'both')
+        col1_width = 4,
+        col2_width = 30,
+        -- How to format the symbols
+        format_symbol = function(symbol_path, filetype)
+          if filetype == "json" or filetype == "yaml" then
+            return table.concat(symbol_path, ".")
+          else
+            return symbol_path[#symbol_path]
+          end
+        end,
+        -- Available modes: symbols, lines, both
+        show_columns = "both",
+      },
+    },
+  })
+  telescope.register_extension({'aerial'})
 end
 
 M.opts = {
   backends = { 'treesitter', 'lsp' },
   default_direction = 'left',
   placement = 'edge',
-  manage_folds = true,
-  link_folds_to_tree = true,
-  link_tree_to_folds = false,
+  manage_folds = false,
+  link_folds_to_tree = false,
+  link_tree_to_folds = true,
   keymaps = {
     ['?'] = 'actions.show_help',
     ['g?'] = 'actions.show_help',

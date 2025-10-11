@@ -22,8 +22,10 @@ local default_config = {
   -- Should write to a file
   use_file = true,
 
+	-- TODO: develop a method to get this from the command
+
   -- Any messages above this level will be logged.
-  level = "trace",
+  level = "info",
 
   -- Level configuration
   modes = {

@@ -51,12 +51,8 @@ function M:init(opts)
   vim.opt.winblend = 8
   vim.opt.pumblend = 8
 
-  if vim.g.neovide then
-    vim.opt.guifont = options.fonts.gui
-    M:setup_neovide()
-  else
-    vim.opt.guifont = 'CommitMono Nerd Font Mono:h11'
-  end
+  vim.opt.guifont = options.fonts.gui
+  if vim.g.neovide then M:setup_neovide() end
 
   -- #endregion gui options
 
@@ -90,7 +86,7 @@ function M:setup_neovide()
   vim.g.neovide_cursor_animation_length = 0.1
   vim.g.neovide_cursor_trail_size = 0.85
 
-  vim.g.neovide_cursor_animate_in_insert_mode = true
+  vim.g.neovide_cursor_animate_in_insert_mode = false
   vim.g.neovide_cursor_animate_command_line = true
   vim.g.neovide_cursor_unfocused_outline_width = 0.2
   vim.g.neovide_cursor_smooth_blink = true

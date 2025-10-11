@@ -6,10 +6,10 @@ setmetatable(M, {
 })
 
 function M:init(opts)
-  if opts['hosts'] ~= nil then
-    local hosts = opts.hosts
-    if hosts['python'] ~= nil then
-      vim.g.python3_host_prog = hosts.python
+  if opts['shell'] ~= nil then
+    local shell = opts.shell
+    if shell['python'] ~= nil then
+      vim.g.python3_host_prog = shell.python
     end
   end
 end

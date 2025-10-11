@@ -3,6 +3,8 @@ local M = {
   "brianaung/compl.nvim",
 }
 
+M.enabled = false
+
 M.opts = {
     -- Default options (no need to set them again)
     completion = {

@@ -23,7 +23,7 @@ M.config = function()
 
     -- All the patterns used to detect root dir, when **"pattern"** is in
     -- detection_methods
-    patterns = { '.git', '.vscode', 'Makefile', 'package.json', 'Cargo.toml' },
+    patterns = { '.git', '.vscode', 'Makefile', 'package.json', 'Cargo.toml', '*.sln', '*.slnx' },
 
     -- Table of lsp clients to ignore by name
     -- eg: { "efm", ... }
@@ -44,7 +44,7 @@ M.config = function()
     -- * global (default)
     -- * tab
     -- * win
-    scope_chdir = 'win',
+    scope_chdir = 'tab',
   })
 
   require('telescope').load_extension('projects')

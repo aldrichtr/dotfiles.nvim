@@ -20,13 +20,20 @@ local path = require('util.path')
 ]] --
 -- #endregion which-key wk.Spec
 
+
+--[[
+-- TODO: Decide whether keybindings should be defined in the packages or
+-- separately
+--
+-- Currently, some keybindings are set in the packages files, and some are set
+-- here.  I'm not sure which is best, but I know that having them in two or more
+-- places is not ideal when trying to find where one was set
+--]]--
 local M = {}
 setmetatable(M, {
   __index = M,
   __call  = function(cls, ...) return cls:init(...) end
 })
-
-
 
 function M:init(opts)
   log.debug("Loading Keybindings")
@@ -36,7 +43,6 @@ function M:init(opts)
   local t_utils = require('telescope.utils')
   local ufo = require('ufo')
   local conform = require('conform')
-  local bufferline = require('bufferline')
   -- ----------------------------------------------------------------------------------------------------------------
   -- Mappings start here
   whichkey.add({
@@ -80,31 +86,11 @@ function M:init(opts)
         desc = 'Format document (conform)',
       },
       -- #endregion <leader> - Top level
+      -- #region <leader>digit - Switching windows
+      -- #endregion <leader>digit - Switching windows
 
       -- #region <leader><leader> - Harpoon
-      { '<leader><leader>', group = 'Harpoon operations' },
-      { '<leader><leader>1', function() require('harpoon.ui').nav_file(1) end, desc = 'Jump to harpoon file 1' },
-      { '<leader><leader>2', function() require('harpoon.ui').nav_file(2) end, desc = 'Jump to harpoon file 2' },
-      { '<leader><leader>3', function() require('harpoon.ui').nav_file(3) end, desc = 'Jump to harpoon file 3' },
-      { '<leader><leader>4', function() require('harpoon.ui').nav_file(4) end, desc = 'Jump to harpoon file 4' },
-      { '<leader><leader>5', function() require('harpoon.ui').nav_file(5) end, desc = 'Jump to harpoon file 5' },
-      { '<leader><leader>6', function() require('harpoon.ui').nav_file(6) end, desc = 'Jump to harpoon file 6' },
-      { '<leader><leader>7', function() require('harpoon.ui').nav_file(7) end, desc = 'Jump to harpoon file 7' },
-      { '<leader><leader>8', function() require('harpoon.ui').nav_file(8) end, desc = 'Jump to harpoon file 8' },
-      { '<leader><leader>9', function() require('harpoon.ui').nav_file(9) end, desc = 'Jump to harpoon file 9' },
-      {
-        '<leader><leader>a',
-        function() require('harpoon.mark').add_file() end,
-        desc = 'Add this file to the harpoon list',
-      },
-      { '<leader><leader>n', function() require('harpoon.ui').nav_next() end, desc = 'Jump to next mark' },
-      { '<leader><leader>p', function() require('harpoon.ui').nav_prev() end, desc = 'Jump to previous mark' },
-      {
-        '<leader><leader>q',
-        function() require('harpoon.ui').toggle_quick_menu() end,
-        desc = 'Show the harpoon quick menu',
-      },
-      { '<leader><leader>t', function() require('harpoon.term').gotoTerminal() end, desc = 'Goto terminal window' },
+
       -- #endregion <leader><leader> - Harpoon
 
       -- #region <leader>! - Todo comments
@@ -117,135 +103,6 @@ function M:init(opts)
       -- #endregion <leader>a - Unused
 
       -- #region <leader>b - buffer operations
-      { '<leader>b', group = 'Buffers' },
-      { '<leader>b1', '<cmd>BufferLineGoToBuffer 1<cr>', desc = 'Goto buffer 1' },
-      { '<leader>b2', '<cmd>BufferLineGoToBuffer 2<cr>', desc = 'Goto buffer 2' },
-      { '<leader>b3', '<cmd>BufferLineGoToBuffer 3<cr>', desc = 'Goto buffer 3' },
-      { '<leader>b4', '<cmd>BufferLineGoToBuffer 4<cr>', desc = 'Goto buffer 4' },
-      { '<leader>b5', '<cmd>BufferLineGoToBuffer 5<cr>', desc = 'Goto buffer 5' },
-      { '<leader>b6', '<cmd>BufferLineGoToBuffer 6<cr>', desc = 'Goto buffer 6' },
-      { '<leader>b7', '<cmd>BufferLineGoToBuffer 7<cr>', desc = 'Goto buffer 7' },
-      { '<leader>b8', '<cmd>BufferLineGoToBuffer 8<cr>', desc = 'Goto buffer 8' },
-      { '<leader>b9', '<cmd>BufferLineGoToBuffer 9<cr>', desc = 'Goto buffer 9' },
-      --
-      { '<leader>bn', '<cmd>BufferLineCycleNext<cr>', desc = 'Goto the next buffer' },
-      { '<leader>bp', '<cmd>BufferLineCyclePrev<cr>', desc = 'Goto the prev buffer' },
-      --
-      {
-        '<leader>bb',
-        function() builtin.buffers() end,
-        desc = 'Select buffer using telescope',
-      },
-      --
-      { '<leader>bc', group = 'Close buffers' },
-      { '<leader>bcc', '<cmd>BufferLinePickClose<cr>', desc = 'Choose a buffer to close' },
-      {
-        '<leader>bcl',
-        '<cmd>BufferLineCloseLeft<cr>',
-        desc = 'Close visible buffers to the left',
-      },
-      {
-        '<leader>bcr',
-        '<cmd>BufferLineCloseRight<cr>',
-        desc = 'Close visible buffers to the right',
-      },
-      {
-        '<leader>bco',
-        '<cmd>BufferLineCloseOthers<cr>',
-        desc = 'Close all other visible buffers',
-      },
-      {
-        '<leader>bd',
-        '<cmd>bdelete<cr>',
-        desc = 'Delete the current buffer',
-      },
-      --
-      { '<leader>bg', group = 'Buffer groups' },
-      { '<leader>bgc', '<cmd>BufferLineGroupClose<cr>', desc = 'Close buffer group' },
-      { '<leader>bgg', '<cmd>BufferLineGroupToggle<cr>', desc = 'Toggle buffer group' },
-      --
-      { '<leader>bm', group = 'Move buffers' },
-      {
-        '<leader>bm1',
-        function() bufferline.move_to(1) end,
-        desc = 'Move current buffer to position 1',
-      },
-      {
-        '<leader>bm2',
-        function() bufferline.move_to(2) end,
-        desc = 'Move current buffer to position 2',
-      },
-      {
-        '<leader>bm3',
-        function() bufferline.move_to(3) end,
-        desc = 'Move current buffer to position 3',
-      },
-      {
-        '<leader>bm4',
-        function() bufferline.move_to(4) end,
-        desc = 'Move current buffer to position 4',
-      },
-      {
-        '<leader>bm5',
-        function() bufferline.move_to(5) end,
-        desc = 'Move current buffer to position 5',
-      },
-      {
-        '<leader>bm6',
-        function() bufferline.move_to(6) end,
-        desc = 'Move current buffer to position 6',
-      },
-      {
-        '<leader>bm7',
-        function() bufferline.move_to(7) end,
-        desc = 'Move current buffer to position 7',
-      },
-      {
-        '<leader>bm8',
-        function() bufferline.move_to(8) end,
-        desc = 'Move current buffer to position 8',
-      },
-      {
-        '<leader>bm9',
-        function() bufferline.move_to(9) end,
-        desc = 'Move current buffer to position 9',
-      },
-      {
-        '<leader>bm$',
-        function() bufferline.move_to(-1) end,
-        desc = 'Move current buffer to last position',
-      },
-      {
-        '<leader>bml',
-        '<cmd>BufferLineMovePrev<cr>',
-        desc = 'Move current buffer to the left',
-      },
-      {
-        '<leader>bmr',
-        '<cmd>BufferLineMoveNext<cr>',
-        desc = 'Move current buffer to the right',
-      },
-      --
-      {
-        '<leader>bP',
-        '<cmd>BufferLineTogglePin<cr>',
-        desc = 'Toggle pin on current buffer',
-      },
-      --
-      { '<leader>bs', group = 'Sort buffers' },
-      {
-        '<leader>bse',
-        '<cmd>BufferLineSortByExtension<cr>',
-        desc = 'Sort buffers by Extension',
-      },
-      {
-        '<leader>bsd',
-        '<cmd>BufferLineSortByDirectory<cr>',
-        desc = 'Sort buffers by Directory',
-      },
-      { '<leader>bst', '<cmd>BufferLineSortByTabs<cr>', desc = 'Sort buffers by tab' },
-      -- #endregion <leader>b - buffer operations
-
       -- #region <leader>c - Unused
       -- #endregion <leader>c - Unused
 

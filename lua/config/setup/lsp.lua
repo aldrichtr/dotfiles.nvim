@@ -1,7 +1,7 @@
 
+local path = require('util.path')
 local cmp_lsp = require('cmp_nvim_lsp')
 local file_ops = require('lsp-file-operations')
-
 
 local M = {}
 setmetatable(M, {
@@ -11,11 +11,13 @@ setmetatable(M, {
 
 function M:init(opt)
   log.debug("Loading lsp config")
+
   local servers = opt.lsp.servers or {}
 
   self:defaults()
   for _, server in pairs(servers) do
     local name, config = server[1], server[2]
+		log.debug("configuring ", name, " with command ", config.cmd)
     vim.lsp.enable(name)
     if config then
         vim.lsp.config(name, config)
