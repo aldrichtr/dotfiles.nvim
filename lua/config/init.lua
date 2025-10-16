@@ -9,7 +9,7 @@ local load = require('util.load')
 ---@field manager Manager The package manager to use
 ---@field stages string[] List of stages to apply
 ---@field options ConfigOptions Settings that control the configuration
-local Config = class('Config')
+Config = class('Config')
 
 function Config:initialize(opts)
   log.debug("Initializing Config")

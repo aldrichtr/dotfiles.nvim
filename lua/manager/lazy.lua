@@ -7,6 +7,7 @@ local Manager = require('manager')
 
 local LazyManager = class('LazyManager', Manager)
 
+--#region Default options for Lazy.Nvim
 local _defaults = {
   root = path.join(path.data, 'lazy'),
   install = {
@@ -18,7 +19,11 @@ local _defaults = {
   setup = {  },
   packages = {'before', 'themes', 'setup', 'after'}
 }
+--#endregion
 
+--- Initialize the object.
+--  We are using middleclass to provide OOP, and the module calls
+--  for the function to be named `initialize`
 function LazyManager:initialize(opt)
   log.debug('Initializing manager - lazy')
   self.options = _defaults

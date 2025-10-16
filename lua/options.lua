@@ -7,6 +7,9 @@ local path = require('util.path')
 
 local ConfigOptions = {}
 
+
+
+
 ConfigOptions.shell = {
   pwsh = path.join(path.Programs, 'WindowsApps', 'Microsoft.PowerShell_7.5.3.0_x64__8wekyb3d8bbwe','pwsh.exe'),
   python = path.join(path.Programs, 'Python312', 'python.exe')
@@ -44,51 +47,6 @@ ConfigOptions.ui = {
   },
   fonts = {
     gui = 'SauceCodePro Nerd Font Mono:h11'
-  }
-}
-
-ConfigOptions.lsp = {
-  servers = {
-    {'lua_ls', {
-      cmd = { path.join(path.lsp.lua, 'bin', 'lua-language-server.exe') },
-      filetypes = { 'lua' },
-      root_markers = {'.luarc.json', '.luarc.jsonc'},
-      settings = {
-        Lua = {
-          runtime = { version = 'LuaJIT' },
-          diagnostics = {
-            globals = { 'vim', 'log', 'class' }
-          }
-        }
-      }
-    }},
-    {'powershell_es', {
-    cmd = {
-      ConfigOptions.shell.pwsh,
-      '-NoProfile', '-NonInteractive', '-Command',
-      '"',
-      "'" .. path.join(path.lsp.pses, '/PowerShellEditorServices/Start-EditorServices.ps1') .. "'",
-      '-HostName', "'nvim'",
-      '-HostProfileId', "'Neovim'",
-      '-HostVersion', '0.11.0',
-      '-LogPath', "'" .. path.join(path.lsp.logs, 'pses') .. "'",
-      '-LogLevel', "'Normal'",
-      '-BundledModulesPath', path.lsp.pses,
-      '-EnableConsoleRepl',
-      '-SessionDetailsPath',
-      "'" .. path.join(path.lsp.logs, 'pses', 'pses.jsonc') .."'",
-      '-AdditionalModules', '@()',
-      '-FeatureFlags', '@()',
-      '"',
-    },
-    filetypes = { 'ps1' },
-    root_markers = {'.build.ps1', 'PSScriptAnalyzerSettings.psd1'},
-    settings = {
-      powershell = {
-        codeFormatting = 'OTBS',
-      },
-    },
-    }}
   }
 }
 

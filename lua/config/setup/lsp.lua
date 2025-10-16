@@ -3,29 +3,32 @@ local path = require('util.path')
 local cmp_lsp = require('cmp_nvim_lsp')
 local file_ops = require('lsp-file-operations')
 
-local M = {}
-setmetatable(M, {
-  __index = M,
-  __call = function(cls,...) return cls:init(...) end
-})
+LspConfiguration = class('LspConfiguration')
 
-function M:init(opt)
+function LspConfiguration:initialize(opt)
   log.debug("Loading lsp config")
 
-  local servers = opt.lsp.servers or {}
+  self:set_defaults()
 
-  self:defaults()
+  local servers = self:get_servers()
   for _, server in pairs(servers) do
-    local name, config = server[1], server[2]
-		log.debug("configuring ", name, " with command ", config.cmd)
-    vim.lsp.enable(name)
-    if config then
-        vim.lsp.config(name, config)
-    end
+    log.debug("enabling ", server.servername )
+    server:enable()
+    server:configure()
   end
 end
 
-function M:defaults()
+function LspConfiguration:get_servers()
+  local servers = {
+    require('config.lsp.pses'):new(),
+    require('config.lsp.luals'):new()
+  }
+
+  return servers
+end
+--- Configure the defaults for all lsps.  Builds the client capabilities,
+--- and can be extended to add any additional settings that belong in '*'
+function LspConfiguration:set_defaults()
   local client_capabilities = vim.lsp.protocol.make_client_capabilities()
 
   vim.tbl_deep_extend("force",
@@ -40,4 +43,4 @@ function M:defaults()
 end
 
 
-return M
+return LspConfiguration

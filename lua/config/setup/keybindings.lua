@@ -28,12 +28,23 @@ local path = require('util.path')
 -- Currently, some keybindings are set in the packages files, and some are set
 -- here.  I'm not sure which is best, but I know that having them in two or more
 -- places is not ideal when trying to find where one was set
+--
+-- If i create a keybinding class, then I could basically keep the keybindings
+-- in one file, and provide a function for the plugins like
+-- local keys = require('config.keybindings')
+--
+-- -- M.keys = keys.myplugin()
+--
 --]]--
+
+
+
 local M = {}
 setmetatable(M, {
   __index = M,
   __call  = function(cls, ...) return cls:init(...) end
 })
+
 
 function M:init(opts)
   log.debug("Loading Keybindings")

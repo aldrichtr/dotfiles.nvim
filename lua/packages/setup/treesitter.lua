@@ -1,12 +1,32 @@
+local path = require('util.path')
+
+local parser_dir = path.join(path.LocalAppData, 'tree-sitter', 'parsers')
+
 local M = {
   'nvim-treesitter/nvim-treesitter'
 }
 
+M.branch = 'main'
+
 M.build = ':TSUpdate'
 
+M.lazy = false
+
+-- we need to put this path at the beginning so that we override the builtin
+-- parsers
+M.init = function()
+  if not path.exists(parser_dir) then
+    log.debug("treesitter parsers directory does not exist.  Creating", parser_dir)
+    vim.fn.mkdir(parser_dir, "p")
+  end
+  vim.opt.runtimepath:prepend(parser_dir)
+end
+
 M.opts = {
+  install_dir = parser_dir,
+
   -- A list of parser names, or "all"
-  ensure_installed = { 'lua' },
+  ensure_installed = { },
   ignore_install = {},
   modules = {},
 

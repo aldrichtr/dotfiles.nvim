@@ -1,43 +1,114 @@
-local M = {}
+local path = require('util.path')
 
-function M.setup(config)
-  local lspconfig = require('lspconfig')
-  local shell = 'pwsh'
-  if not vim.fn.executable('pwsh') then shell = 'powershell' end
-  local bundle_path = vim.fs.normalize(vim.env.LOCALAPPDATA .. '/lsp' .. '/pses')
 
-  local log_path = vim.fn.stdpath('log')
+LspPowerShell = class('LspPowerShell')
 
-  local cmd = {
-    shell,
-    '-NoProfile', '-NonInteractive', '-Command',
-    '"',
-    "'" .. vim.fs.joinpath(bundle_path, '/PowerShellEditorServices/Start-EditorServices.ps1') .. "'",
-    '-HostName', "'nvim'",
-    '-HostProfileId', "'Neovim'",
-    '-HostVersion', '0.0.0',
-    '-LogPath', "'" .. vim.fs.joinpath(log_path, 'pses') .. "'",
-    '-LogLevel', "'Normal'",
-    '-BundledModulesPath', bundle_path,
-    '-EnableConsoleRepl',
-    '-SessionDetailsPath',
-    "'" .. vim.fs.joinpath(log_path, 'pses.jsonc') .."'",
-    '-AdditionalModules', '@()',
-    '-FeatureFlags', '@()',
-    '"',
-  }
-
-  vim.notify('Starting PSES with cmd:')
-  vim.notify(table.concat(cmd, ' '))
-  lspconfig.powershell_es.setup({
-    cmd = cmd,
-    filetypes = { 'ps1', 'psm1', 'psd1' },
-    settings = {
-      powershell = {
-        codeFormatting = 'OTBS',
-      },
-    },
-  })
+function LspPowerShell:initialize()
+  self.name = 'powershell_es'
 end
 
-return M
+function LspPowerShell:configure()
+  -- Unfortunately, the PSES script has a bunch of options on the command line
+  -- so we need to build it up in layers to get the formatting right
+
+  -- This is the shell executable and its options
+  local shell = {
+    cmd = path.join(path.Programs, 'WindowsApps','Microsoft.PowerShell_7.5.3.0_x64__8wekyb3d8bbwe','pwsh.exe'),
+    -- cmd = "C:/WINDOWS/System32/WindowsPowerShell/v1.0/powershell.exe",
+    options = '-NoProfile -NoLogo -Command'
+  }
+
+  -- Logging options for the LSP
+  local logging = {
+    level = 'Normal',
+    path = vim.fs.joinpath(path.lsp.logs, 'pses'),
+    session = vim.fs.joinpath(path.lsp.logs, 'pses', 'pses.jsonc'),
+  }
+
+  -- The PSES module and options for other modules and features
+  local bundle = {
+    path = path.join(path.lsp.pses),
+    server = 'Start-EditorServices.ps1',
+    modules = '@()',
+    features = '@()'
+  }
+
+  -- Neovim is the host program for the LSP
+  local host = {
+    name = "nvim",
+    profileId = "Neovim",
+    version = function()
+      local v = vim.version()
+      local fmt = "%d.%d.%d"
+      return string.format(fmt, v.major, v.minor, v.patch)
+    end
+  }
+
+
+  -- ----------------------------------------------------------
+  -- Now we start building up the command string
+
+  local cmd_info = string.format(
+    [[%s %s]],
+    shell.cmd, shell.options
+  )
+
+  local host_info = string.format(
+    [[-HostName '%s' -HostProfileId '%s' -HostVersion '%s']],
+    host.name, host.profileId, host.version()
+  )
+  local log_info = string.format(
+    [[-LogPath '%s' -LogLevel '%s' -SessionDetailsPath '%s']],
+    logging.path, logging.level, logging.session
+  )
+  local bundle_info = string.format(
+    -- [[%s -BundledModulesPath '%s' -AdditionalModules '%s' -FeatureFlags '%s' -EnableConsoleRepl -Stdio]],
+    [[%s -BundledModulesPath '%s' -AdditionalModules '%s' -FeatureFlags '%s' -Stdio]],
+    -- [[%s -BundledModulesPath '%s' -AdditionalModules '%s' -FeatureFlags '%s']],
+    path.join(bundle.path,'PowerShellEditorServices', bundle.server), bundle.path, bundle.modules, bundle.features
+
+  )
+
+  -- -----------------------------------------------------------
+  -- now we put the whole string together
+
+  local server_start = table.concat(
+    { cmd_info, bundle_info, host_info, log_info }, ' '
+  )
+  -- this is the table that gets fed to `vim.lsp.config['powershell_es']`
+  -- note that we are returning a table from the initialize() function,
+  -- which means that require('config.lsp.pses') will get that table
+  local config = {
+    shell = 'pwsh',
+    cmd = { server_start },
+    filetypes = { 'ps1' },
+    settings = {
+      powershell = {
+        codeFormatting = 'OTBS'
+      }
+    },
+    init_options = {
+      enableProfileLoading = false
+    }
+  }
+
+  local test_config = {
+    bundle_path = bundle.path,
+    shell = "pwsh",
+    settings = {
+      powershell = {
+        codeFormatting = 'OTBS'
+      }
+    },
+    init_options = {
+      enableProfileLoading = false
+    }
+  }
+  vim.lsp.config(self.name, test_config)
+end
+
+function LspPowerShell:enable()
+  vim.lsp.enable(self.name)
+end
+
+return LspPowerShell

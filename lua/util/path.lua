@@ -16,7 +16,7 @@ local Path = {
   LocalAppData = normalize(vim.env.LOCALAPPDATA),
   AppData = normalize(vim.env.APPDATA),
   Home = vim.env.HOME,
-  Programs = normalize(vim.env.ProgramFiles)
+  Programs = normalize('c:/programs')
 }
 
 Path.dotfiles = Path.join(Path.Home, '.dotfiles')
@@ -29,7 +29,7 @@ Path.lsp = { root = Path.join(vim.env.LOCALAPPDATA, 'lsp'),
              logs = Path.join(Path.data, 'logs') }
 
 Path.lsp['lua'] = Path.join(Path.lsp.root, 'lua')
-Path.lsp['pses'] = Path.join(Path.lsp.root, 'pses')
+Path.lsp['pses'] = Path.join(Path.lsp.root, 'pwsh')
 
 
 function Path.exists(p)
