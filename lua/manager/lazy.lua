@@ -39,14 +39,15 @@ function LazyManager:configure(opts)
   log.debug("Loading manager lazy")
 
   if not self:isInstalled() then
+    log.warn("Lazy package manager not installed")
     self:install()
   end
 
   if is.present(self.options.setup.spec) then
-    log.debug("spec", self.options.setup.spec, "was given")
+    log.warn("Package spec was configured outside configure()")
   else
     log.debug("no spec given in options. Building spec")
-     self.options.setup['spec'] = self:build_spec(packages)
+     self.options.setup['spec'] = self:build_spec()
   end
 end
 

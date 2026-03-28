@@ -4,14 +4,14 @@ local path = require('util.path')
 local load = require('util.load')
 local is   = require('util.is')
 
----@type NVimConfig
-NVimConfig = class('Config')
+---@type Config
+Config = class('Config')
 
-function NVimConfig:initialize(opts)
+function Config:initialize(opts)
   log.debug("Initializing Config")
   self.name = 'Default'
   self.path = path.caller()
-  self.stages = { 'before', 'manager', 'setup', 'after' }
+  self.stages = {'before', 'setup', 'after', 'keybindings'}
   self.options = {}
   if is.present(opts) then
     self.options = vim.tbl_deep_extend('force', self.options, opts)
@@ -19,17 +19,13 @@ function NVimConfig:initialize(opts)
 end
 
 
-function NVimConfig:configure(opts)
-  self.options.shell = require('options.shell')
-  self.options.ui    = require('options.ui')
-  self.options.snippets = require('options.snippets')
-end
+function Config:configure(opts) end
 
-function NVimConfig:load(stages)
-	log.debug("Applying Config")
+function Config:load(stages)
+  log.debug("Applying Config")
   local stages = stages or self.stages
   for _, stage in ipairs(stages) do
-		log.debug("Configuration stage", stage)
+    log.debug("Configuration stage", stage)
       local stage_dir = path.join(vim.fs.dirname(self.path), stage)
       log.debug("Getting ready to apply settings in ", stage_dir)
       if path.exists(stage_dir) then
@@ -40,4 +36,4 @@ function NVimConfig:load(stages)
     end
 end
 
-return NVimConfig
+return Config

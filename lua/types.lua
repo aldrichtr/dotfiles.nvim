@@ -17,6 +17,10 @@
 ---@field public colors table A table of color options
 ---@field public fonts table A table of fonts to be used
 
+---@class ShellOptions
+---@field public pwsh table Powershell options
+---@field public python table Python options
+
 ---@class ConfigOptions
 ---@field public shell ShellOptions Options for shells
 ---@field public snippets SnippetOptions Options for snippets
@@ -29,9 +33,12 @@
 ---@field public name string Name used to identify the manager type
 ---@field private options ManagerOptions The configuration options needed by Manager
 
+---@class LazyManager : Manager
+---@class LangServManager : Manager
+
 ---@class NVimConfig
----@field protected name string A unique name for the class.
----@field private path string The path to the given class file
----@field stages string[] List of stages to apply
----@field options ConfigOptions Settings that control the configuration
+---@field public name string A unique name for the class.
+---@field public path string The path to the given class file
+---@field public stages string[] List of stages to apply
+---@field public options ConfigOptions Settings that control the configuration
 -- #endregion config objects ----------------------------------------------------------

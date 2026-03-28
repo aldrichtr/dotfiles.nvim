@@ -2,28 +2,38 @@
 
 ```
 lua
-├───config     <-- Main configuration scripts
-│   ├───after
-│   ├───before
-│   ├───lsp
-│   └───setup
-├───manager    <-- Package managers such as lazy or mason
-├───packages   <-- Lazy plugin secs
-│   ├───after
-│   ├───before
-│   ├───disabled
-│   ├───setup
-│   └───themes
-└───util       <-- My custom functions that support init
-    └───class
-```
-## Initialization flow
+├───┬ config     <-- Main configuration scripts
+│   ├─── after
+│   ├─── before
+│   ├─── lsp
+│   └─── setup
+├──── extern     <-- Lua modules from external sources
+├──── manager    <-- Package managers such as lazy, LSP, or mason
+├──── options    <--
+├───┬ packages   <-- Lazy plugin secs
+│   ├─── after
+│   ├─── before
+│   ├─── disabled
+│   ├─── setup
+│   └─── themes
+└──── util       <-- My custom functions that support init
 
-Neovim loads `init.el`, which adds the `util.log` to the Global table, rather
-than requiring it from basically every file.
+```
+## Logging
+
+In general, I try to avoid globals, but since I use the logger throughout the
+init, it is just a convenience instead of putting:
 ``` lua
 _G.log = require('util.log')
 ```
+in every file
+
+
+
+
+
+
+
 
 ### Options
 
@@ -37,12 +47,11 @@ local options = require('options')
 ```
 The main body of the initialization is in `lua/config`.  Config loads the
 subdirectories in the following order, when `apply()` is called:
-```
-- before         <-- Settings that should be in place before the plugins
-- Manager:load() <-- The plugins are loaded and configured
-- setup          <-- Settings that should be set after plugins
-- after          <-- Settings that should be set after everything else
-```
+
+   > - before         <-- Settings that should be in place before the plugins
+   > - Manager:load() <-- The plugins are loaded and configured
+   > - setup          <-- Settings that should be set after plugins
+   > - after          <-- Settings that should be set after everything else
 
 `/lua/config/init` requires all of the files in each of those directories,
 so to add any additional settings, just add it either to one of the existing
