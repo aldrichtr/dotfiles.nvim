@@ -18,7 +18,8 @@ local is = {}
 --- Check if value is nil.
 ---@param v any
 ---@return boolean
-function is.nul(v) return v == nil end
+-- NOTE: we cant just say is.nil because lua sees that as an acutal `nil`
+function is.a_nil(v) return v == nil end
 
 --- Check if value is a boolean.
 ---@param v any
@@ -61,9 +62,15 @@ function is.a_thread(v) return type(v) == "thread" end
 ---@param v any
 ---@return boolean
 function is.empty(v)
-  if is.a_string(v) then return v == "" end
-  if is.a_table(v) then return next(v) == nil end
-  return false
+  if is.a_nil(v) then
+    return true
+  elseif is.a_string(v) then
+    return v == ""
+  elseif is.a_table(v) then
+    return next(v) == nil
+  else
+    return false
+  end
 end
 
 --- Check if value is a non-empty string or table.

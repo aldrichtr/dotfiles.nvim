@@ -1,20 +1,24 @@
 
+-- Add a new command, `class`
+_G.class = require('extern.middleclass')
 
--- I downloaded and modified the vlog script.  I made it global here because
--- it can be used anywhere in the init that I'm having issues
+local load = require('util.load')
+
+-- I downloaded and modified the vlog script.
+-- NOTE: I made it global here because it can be used anywhere in the init that I'm having issues
+
 _G.log = require('util.log')
+
 log.debug(string.rep("-",40))
 log.debug("- Beginning neovim initialization script")
-local path = require('util.path')
 
--- My luarocks installation puts rocks in ~/.local/share/lua/share/lua/5.1
--- currently I am using the `middleclass` library for OOP, so I need to add this here early
+local Lazy = require('manager.lazy')
+local LangServ = require('manager.langserv')
+local Config = require('config')
 
-local shared_lib_dir = path.join(path.LocalAppData, 'lua', 'share', 'lua', '5.1')
-package.path = package.path .. ';' .. shared_lib_dir .. '/?.lua'
-
--- Add a new command, `class`
-_G.class = require('middleclass')
+local lazy = Lazy:new()
+local nv = Config:new()
+local lsp = LangServ:new()
 
 -- ------------------------------------------------------------------------------
 -- This is where my configuration starts.
@@ -28,19 +32,15 @@ _G.class = require('middleclass')
 --               - Initialize and run the manager
 --               - Run all the scripts in the `config/setup` directory
 --               - Run all the scripts in the `config/after` directory
--- **note** that the `config/lsp` directory is a leftover of the old configuration,
---          I am now using the options.lsp and the `config/setup/lsp` file to setup
---          the lsps.
-local options = require('options')
-local Manager = require('manager.lazy')
-local Config = require('config')
 
-local config = Config:new(options)
-
-config.manager = Manager:new(options.manager)
+lazy:configure()
+nv:configure()
+lsp:configure()
 
 -- This is where all the settings start to get applied
-config:apply()
+lazy:load()
+nv:load()
+lsp:load()
 
 -- ------------------------------------------------------------------------------
 log.debug("Initialization complete")

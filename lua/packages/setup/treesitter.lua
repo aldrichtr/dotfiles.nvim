@@ -1,6 +1,6 @@
 local path = require('util.path')
 
-local parser_dir = path.join(path.LocalAppData, 'tree-sitter', 'parsers')
+local parser_dir = path.join(path.LocalAppData, 'tree-sitter')
 
 local M = {
   'nvim-treesitter/nvim-treesitter'
@@ -20,13 +20,16 @@ M.init = function()
     vim.fn.mkdir(parser_dir, "p")
   end
   vim.opt.runtimepath:prepend(parser_dir)
+
+  local ts = require('nvim-treesitter')
+
 end
 
 M.opts = {
   install_dir = parser_dir,
 
   -- A list of parser names, or "all"
-  ensure_installed = { },
+  ensure_installed = { 'bash', 'lua', 'powershell', 'yaml' },
   ignore_install = {},
   modules = {},
 

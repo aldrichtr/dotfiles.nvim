@@ -1,4 +1,5 @@
 --[[ A utility module for loading other modules ]]--
+
 local path = require('util.path')
 local is = require('util.is')
 
@@ -6,15 +7,20 @@ local load = {}
 
 --- Require all files in the given path.
 --- If arguments are provided, they will be passed to each module as a function call.
----@param find string Path to the directory to look for files in.
+---@param root string Path to the directory to look for files in.
 ---@param ... any Optional arguments to pass to each module.
 ---@return table modules Table of required modules.
-function load.all(find, ...)
-  if find == "" then
-    error("❌ 'find' must not be empty")
+function load.all(root, ...)
+  if is.empty(root) then
+    error("❌ 'root' must not be empty")
   end
+  log.trace(string.format("Loading all lua files in '%s'", root))
   local options = ...
-  local files = path.find(find)
+
+  local files = path.find({
+    dir = root,
+    match = "(.+).lua$",
+    exclude = {"init.lua"}})
 
   local results = {}
   local result

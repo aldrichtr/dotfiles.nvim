@@ -27,14 +27,14 @@ function M:init(opts)
   vim.opt.showtabline = 2
 
   -- #region wildmenu
-  vim.opt.completeopt = { 'menu', 'menuone' }
+  vim.o.completeopt = 'menu,menuone'
 
   -- Display completion matches in the status line
   vim.opt.wildmenu = true
   -- Use fuzzy search, and a Pop-Up UiSetupConfigenu
   vim.opt.wildoptions = { 'fuzzy', 'pum' }
   -- in list form to the longest match
-  vim.opt.wildmode = { 'longest', 'full' }
+  vim.o.wildmode = 'longest:full'
   vim.opt.wildignorecase = false
   -- #endregion wildmenu
 

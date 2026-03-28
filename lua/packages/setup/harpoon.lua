@@ -5,15 +5,14 @@ local M = {
 
 M.branch = 'harpoon2'
 
-M.dependencies = { 'nvim-lua/plenary.nvim' }
+M.dependencies = {
+  'nvim-lua/plenary.nvim',
+  'nvim-telescope/telescope.nvim'
+}
 
 M.event = { 'BufReadPre' }
 
-M.init = function()
-  require('telescope').register_extension({'harpoon'})
-end
-
-M.opt = {}
+-- M.opt = {}
 
 M.keys = require('config.keybindings.harpoon')
 

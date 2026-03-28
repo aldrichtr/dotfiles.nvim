@@ -20,7 +20,7 @@ local function harpoon_keys()
       '<leader><leader>a', function() list:add() end, desc = 'Add this file to the harpoon list', },
     { '<leader><leader>n', function() list:next() end, desc = 'Jump to next mark' },
     { '<leader><leader>p', function() list:prev() end, desc = 'Jump to previous mark' },
-    { '<leader><leader>q', function() harpoon.ui:toggle_quick_menu(list) end, desc = 'Show the harpoon quick menu', }
+    { '<leader><leader>m', function() harpoon.ui:toggle_quick_menu(list) end, desc = 'Show the harpoon quick menu', }
   }
   return keys
 end

@@ -1,4 +1,5 @@
-
+-- NOTE: Open link under cursor
+-- https://github.com/elentok/open-link.nvim
 local M = {
   'elentok/open-link.nvim'
 }

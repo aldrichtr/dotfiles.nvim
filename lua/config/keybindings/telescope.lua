@@ -1,10 +1,10 @@
 
 local function telescope()
-  local telescope = require('telescope.builtin')
+  local builtin = require('telescope.builtin')
 
   local keys = {
-    {'<leader>ff', telescope.find_files, desc = "Telescope find files" },
-    {'<leader>/', telescope.grep_string, desc = "Telescope grep thing under point"}
+    {'<leader>ff', builtin.find_files, desc = "Telescope find files" },
+    {'<leader>/', builtin.grep_string, desc = "Telescope grep thing under point"}
 
   }
   return keys

@@ -1,0 +1,44 @@
+-- TODO: Make the LspConfig a hierachy of `middleclass` classes
+-- This is actually more of a manager than a config, because it loads all of the
+-- actual configs.
+
+local log = require('util.log')
+local cmp_lsp = require('cmp_nvim_lsp')
+local file_ops = require('lsp-file-operations')
+
+
+local LspConfig = {}
+setmetatable(LspConfig, {
+  __index = LspConfig,
+  __call = function(cls, ...) return cls:new(...) end
+})
+
+
+
+
+
+function LspConfig:new(opt)
+  log.debug("Loading lsp config")
+  local instance = {
+    name = 'lspconfig',
+    options = opt or {servers = {}}
+  }
+  setmetatable(instance, self)
+  return instance
+end
+
+function LspConfig:enable()
+  log.debug("Enabling lsp servers")
+  local servers = self.options.servers
+
+
+
+  if next(servers) ~= nil then
+    for _, server in servers do
+      vim.lsp.config[server] = require('config.lsp' .. server)
+      vim.lsp.enable(server)
+    end
+  end
+end
+
+return LspConfig

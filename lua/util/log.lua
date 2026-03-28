@@ -14,7 +14,7 @@ local default_config = {
   plugin = 'nvim.init',
 
   -- Should print the output to neovim while running
-  use_console = true,
+  use_console = false,
 
   -- Should highlighting be used in console (using echohl)
   highlights = true,
@@ -25,7 +25,7 @@ local default_config = {
 	-- TODO: develop a method to get this from the command
 
   -- Any messages above this level will be logged.
-  level = "info",
+  level = "trace",
 
   -- Level configuration
   modes = {
