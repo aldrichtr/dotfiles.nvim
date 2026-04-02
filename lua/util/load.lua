@@ -28,7 +28,7 @@ function load.all(root, ...)
     local mod = path.convert_to_module(file)
     log.trace("loading module", mod)
     if is.present(options) then
-      result = require(mod)(options)
+      result = require(mod){options}
     else
       result = require(mod)
     end

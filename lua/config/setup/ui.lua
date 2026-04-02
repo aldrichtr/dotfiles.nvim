@@ -9,7 +9,7 @@ setmetatable(M, {
 })
 
 function M:init(opts)
-  local options = opts.ui or {}
+  local options = opts.ui or require('options.ui')
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
   -- Enable modelines in files
@@ -63,12 +63,6 @@ function M:init(opts)
   vim.opt.splitbelow = true
   -- vsplit creates a new window to the right
   vim.opt.splitright = true
-
-  vim.diagnostic.config({
-    float = { border = 'rounded' },
-  })
-  vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'rounded' })
-  vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' })
 end
 
 ---Configuration for neovide, a "gui" for neovim

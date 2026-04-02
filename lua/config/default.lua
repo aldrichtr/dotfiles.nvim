@@ -11,7 +11,7 @@ function Config:initialize(opts)
   log.debug("Initializing Config")
   self.name = 'Default'
   self.path = path.caller()
-  self.stages = { 'before', 'manager', 'setup', 'after', 'keybindings' }
+  self.stages = {'before', 'setup', 'after', 'keybindings'}
   self.options = {}
   if is.present(opts) then
     self.options = vim.tbl_deep_extend('force', self.options, opts)
@@ -29,7 +29,7 @@ function Config:load(stages)
       local stage_dir = path.join(vim.fs.dirname(self.path), stage)
       log.debug("Getting ready to apply settings in ", stage_dir)
       if path.exists(stage_dir) then
-        load.all(stage_dir)
+        load.all(stage_dir, self.options)
       else
         log.warn("Config Stage", stage, "is not a defined stage")
       end
@@ -37,3 +37,4 @@ function Config:load(stages)
 end
 
 return Config
+
