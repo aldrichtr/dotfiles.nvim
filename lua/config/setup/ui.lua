@@ -51,7 +51,8 @@ function M:init(opts)
   vim.opt.winblend = 8
   vim.opt.pumblend = 8
 
-  vim.opt.guifont = options.fonts.gui
+  -- vim.opt.guifont = options.fonts.gui
+  vim.opt.guifont = "Lilex Nerd Font:h11"
   if vim.g.neovide then M:setup_neovide() end
 
   -- #endregion gui options

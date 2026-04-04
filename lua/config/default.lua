@@ -4,15 +4,13 @@ local path = require('util.path')
 local load = require('util.load')
 local is   = require('util.is')
 
----@type Config
-Config = class('Config')
+Config = require ('Config')
+
+---@type Configuration
+DefaultConfig = class('DefaultConfig', Config)
 
 function Config:initialize(opts)
-  log.debug("Initializing Config")
   self.name = 'Default'
-  self.path = path.caller()
-  self.stages = {'before', 'setup', 'after', 'keybindings'}
-  self.options = {}
   if is.present(opts) then
     self.options = vim.tbl_deep_extend('force', self.options, opts)
   end

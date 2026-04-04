@@ -36,7 +36,45 @@ function load.all(root, ...)
   end
   return results
 end
-
+---
+--- Attempt to require a module with error handling.
+---
+--- ## Usage
+--- ### 1. Simple require
+--- ```lua
+--- local mod, err = load.try("my.module")
+--- if not mod then
+---   log.error("Failed to load module: " .. err)
+--- end
+--- ```
+---
+--- ### 2. Require a module *that returns a function*, and call it
+--- ```lua
+--- local result, err = load.try("my.module.init", "arg1", "arg2")
+--- if not result then
+---   log.warn("Module init failed: " .. err)
+--- end
+--- ```
+---
+--- ### 3. Use as a safe optional dependency
+--- ```lua
+--- local telescope = load.try("telescope")
+--- if telescope then
+---   telescope.setup({})
+--- end
+--- ```
+---
+--- ### 4. Use inside plugin setup blocks
+--- ```lua
+--- local ok, colorscheme = load.try("colors.mytheme")
+--- if ok then
+---   vim.cmd("colorscheme mytheme")
+--- end
+--- ```
+---
+--- Returns:
+---   - result: module or function return value, or nil on failure
+---   - err: error message if failure occurred
 --- Attempt to require a module with error handling.
 --- If arguments are provided, they will be passed to the module as a function call.
 ---@param mod string Dot-separated path to module.

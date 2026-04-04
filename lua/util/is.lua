@@ -82,6 +82,17 @@ function is.filled(v)
   return false
 end
 
+--- Check if the given table contains the key
+---@param t table The table to search
+---@param k string The name of the key to search for
+---@return boolean
+function is.a_key_of(t,k)
+  if is.a_table(t) then
+    return is.present(t[k])
+  end
+  return false
+end
+
 --- Check if value is present (not nil and not empty).
 ---@param v any
 ---@return boolean

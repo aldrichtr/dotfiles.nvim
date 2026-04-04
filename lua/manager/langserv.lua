@@ -3,6 +3,9 @@ local path = require('util.path')
 local load = require('util.load')
 local is   = require('util.is')
 
+local CONFIG_DIR = path.join(path.lua, 'config')
+
+
 local Manager = require('manager')
 
 LangServerManager = class('LangServerManager', Manager)
@@ -37,7 +40,16 @@ function LangServerManager:configure(opts)
   end
 end
 
-function LangServerManager:load()
+function LangServerManager:configure_server(name, config)
+  local p = path.join()
+end
+
+
+function LangServerManager:enable_server(name)
+
+end
+
+function LangServerManager:load(pkg)
   Manager.load(self)
 end
 
