@@ -2,9 +2,8 @@
 -- structures, like git-status, document symbols, etc.
 
 ---@type LazySpec
-local M = {
-  'nvim-neo-tree/neo-tree.nvim',
-}
+local M = { 'nvim-neo-tree/neo-tree.nvim', }
+
 M.branch = 'v3.x'
 
 M.dependencies = {
@@ -15,7 +14,15 @@ M.dependencies = {
   '3rd/image.nvim',
 }
 
-M.keys = require('config.keybindings.neo-tree')
+M.keys = function()
+  local keys = {
+    -- Toggle neotree filesystem
+    { '<leader>0', '<cmd>Neotree<cr>', desc = 'Reveal the file explorer'},
+    -- Version Control
+    { '<leader>gs', '<cmd>Neotree float git_status<cr>'}
+  }
+  return keys
+end
 
 M.cmd = 'Neotree'
 
