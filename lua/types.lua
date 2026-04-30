@@ -31,6 +31,10 @@
 ---@field private managers Manager[] The active managers in the configuration
 ---@field public profile ProfileOptions the configuration profile to load
 
+
+---@class ConfigurationOptions
+---@field public profile string The name of the profile to load
+
 -- local Config = require('config')
 -- Config = Config:new({profile = 'default'})
 --

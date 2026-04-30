@@ -1,20 +1,20 @@
 
 
----@type ProfileOptions
-local Default = {
-	name = 'default'
-}
+local Profile = require('profile')
+
+local Default = class('Default', Profile)
 
 
-Default.managers = {
-	lazy = {},
-	langserv = {}
-}
-
-Default.before = {}
-
-Default.setup = {}
-
-Default.after = {}
+function Default:initialize()
+  self.name = 'default'
+  self.managers = {
+    lazy = {},
+    langserv = {}
+  }
+  self.before = {}
+  self.setup = {}
+  self.after = {}
+  return self
+end
 
 return Default

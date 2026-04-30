@@ -1,5 +1,5 @@
 -- This is the main entry point to my customized neovim configuration
-
+local types = require('types')
 -- Dependencies
 local path = require('util.path')
 local load = require('util.load')
@@ -13,18 +13,39 @@ local CONFIG_DIR  = path.join(path.lua, 'config')
 ---@type Configuration
 local Config = class('Config')
 
+
+---@public
+---@param opts ConfigurationOptions
+---@return Configuration A configuration object that configures nvim
 function Config:initialize(opts)
   self.name = 'Config'
   log.debug("Initializing", self.name)
   self.stages = { 'before', 'manager', 'setup', 'after' }
   self.managers = {}
-  self.profile = {}
+  if is.present(opts.profile) then
+    self.profile = self:load_profile(opts.profile)
+  else
+    self.profile = self:load_profile(DEFAULT_PROFILE)
+  end
+end
+
+---@public
+---@return string e Returns nil if no errors were reported
+function Config:apply()
+  for _,stage in ipairs(self.stages) do
+    if stage == 'manager' then
+      for name, config in pairs(self.profile.managers) do
+      end
+    else
+      self.load_stage(stage)
+    end
+  end
 end
 
 
 ---@private
 ---@param p table|string The name of the profile to load
----@return string err Nil if successful, the error message if not
+---@return string err nil if successful, the error message if not
 function Config:load_profile(p)
   if is.empty(p) then
     return "No profile was given to load"
@@ -67,7 +88,7 @@ end
 
 ---@private
 --- For every item specified in profile.stage, lookup the module in the config
---- directory, if it exists, require it and call load() 
+--- directory, if it exists, require it and call load()
 ---@param stage string The name of the stage to load
 ---@return string e Returns nil if no errors were reported
 function Config:load_stage(stage)
@@ -93,20 +114,6 @@ function Config:load_stage(stage)
   end
 
   if is.present(e) then return e end
-end
-
----@public
----@return string e Returns nil if no errors were reported
-
-function Config:apply()
-  for _,stage in ipairs(self.stages) do
-    if stage == 'manager' then
-      for name, config in pairs(self.profile.managers) do
-      end
-    else
-      self.load_stage(stage)
-    end
-  end
 end
 
 return Config
