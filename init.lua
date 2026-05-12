@@ -300,11 +300,12 @@ require("lazy").setup(
         local command = string.format( table.concat(command_fmt, ' '),
         bundle_path, bundle_path, log_path, log_path)
         local cmd = { shell, '-NoLogo', '-NoProfile', '-Command', command }
+        local runner = string.format(table.concat(cmd, ' '))
 
         return {
           name = "powershell_es",
           shell = 'pwsh',
-          cmd = cmd,
+          cmd = runner,
           filetypes = { 'ps1' },
           settings = {
             powershell = {

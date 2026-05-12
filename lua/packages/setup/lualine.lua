@@ -94,13 +94,13 @@ local statusline = {
     },
   },
   lualine_x = {
-    { "datetime", style = "%A - %d %B %H:%M" },
     { "encoding" },
   },
   lualine_y = { "searchcount", "progress" },
   lualine_z = {
     "aerial",
     "location",
+    { "datetime", style = "%H:%M" },
   },
 }
 

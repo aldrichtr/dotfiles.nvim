@@ -9,14 +9,8 @@ M.version = 'v2.*'
 M.build = false
 
 M.init = function()
-  local vscode = require('luasnip.loaders.from_vscode')
   local lua = require('luasnip.loaders.from_lua')
-  -- TODO: I want to get this from the options, but this file is required
-  --       by options and so it causes a loop to require options here
-  local root = path.join(path.init, 'snipppets')
-
-  -- load json format "vscode style" snippets
-  vscode.lazy_load({ paths = { path.join(root, 'vscode') } })
+  local root = path.join(path.init, 'snippets')
 
   -- load lua format "luasnip native" snippets
   lua.lazy_load({ paths = { path.join(root, 'lua') } })

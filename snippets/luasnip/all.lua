@@ -16,18 +16,21 @@
   -- nodes:table,     -- table of snippet nodes
   -- opts:table|nil   -- *optional* table of additional snippet options
 -- )
-local M = {
-  s({ trig = ",region", snippetType="autosnippet", desc = "Region comment markers"},
+local M = {}
+
+
+M.all = {
+    s({ trig = ",region", snippetType="autosnippet", desc = "Region comment markers"},
     fmta(
       [[
       #region <>
       <>
       #endregion <>
       ]],
-      { i(1), i(2), rep(1)}
+      { i(1), i(2), rep(1)})
     )
-  )
-}
+  }
+
 
 
 
