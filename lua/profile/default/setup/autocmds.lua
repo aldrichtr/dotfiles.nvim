@@ -13,6 +13,7 @@ function M:init(opts)
   --
   -- #region Create an autocmd for when the LSP is started
   local cmds = {
+    -- LSP Actions
     {{"LspAttach"} ,
     {desc = "LSP actions",
     callback = function()
@@ -34,16 +35,20 @@ function M:init(opts)
       bufmap("n", "]d", function() diag.goto_next() end, { desc = "Move to the next diagnostic" })
     end,
   }},
+  -- Remove trailing whitespace on save
   {{'BufWritePre' },
   {pattern = { '*' }, desc = 'Remove trailing whitespace on save', command = [[%s/\s\+$//e]] }, },
   {{'ModeChanged' },
+  -- Disable diagnostics in insert and select mode
   {pattern = { 'n:i', 'v:s' },
   desc = 'Disable diagnostics in insert and select mode',
   callback = function() vim.diagnostic.config({ virtual_text = false }) end, }, },
+  -- Enable diagnostics when leaving insert mode
   {{'ModeChanged' },
   {pattern = 'i:n',
   desc = 'Enable diagnostics when leaving insert mode',
   callback = function(e) vim.diagnostic.config({ virtual_text = true }) end, }, },
+  -- Use `q` to quit additional windows
   {{'FileType' },
   {desc = 'Close help, quickfix, netrw, etc. windows with q',
   pattern = 'help,qf,netrw',

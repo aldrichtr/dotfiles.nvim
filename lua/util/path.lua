@@ -41,6 +41,7 @@ Path.lua = Path.join(Path.init, 'lua')
 -- TODO: This might be confusing because it seems like stdpath('config') should be `config`
 --       but it is the path to the main config of my init `lua/config`
 Path.config = Path.join(Path.lua, 'config')
+Path.profile = Path.join(Path.lua, 'profile')
 
 Path.lsp = { root = Path.join(vim.env.LOCALAPPDATA, 'lsp'),
 logs = Path.join(Path.data, 'logs') }
@@ -153,12 +154,12 @@ function Path.find(...)
 		directory = string.sub(directory, 2)
 	end
 	-- 2. match --------------------------------------------------------------
-	if is.empty(match) then 
-		match = "(.+).lua$" 
+	if is.empty(match) then
+		match = "(.+).lua$"
 	end
 	-- 3. exclude ------------------------------------------------------------
-	if is.empty(exclude) then 
-		exclude = {} 
+	if is.empty(exclude) then
+		exclude = {}
 	end
 	-- 4. details ------------------------------------------------------------
 
@@ -181,7 +182,7 @@ function Path.find(...)
 
 	log.trace(string.format("Finding files in '%s' that match '%s'", details.path, match))
 	files = vim.fs.find(
-		function(name, path) 
+		function(name, path)
 			return name:match(match) and not exclude[name]
 		end , details)
 

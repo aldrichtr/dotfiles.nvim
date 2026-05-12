@@ -1,20 +1,22 @@
 
+local options = 'profile.default.options'
 
-local Profile = require('profile')
+local M = {}
 
-local Default = class('Default', Profile)
+M.name = 'default'
 
+M.before = {}
 
-function Default:initialize()
-  self.name = 'default'
-  self.managers = {
-    lazy = {},
-    langserv = {}
+M.managers = {
+    lazy = require(options .. 'lazy'),
+
+    langserv = require(options .. 'langserv')
   }
-  self.before = {}
-  self.setup = {}
-  self.after = {}
-  return self
-end
 
-return Default
+M.setup = {
+  ui = require(options .. 'ui')
+}
+
+M.after = {}
+
+return M

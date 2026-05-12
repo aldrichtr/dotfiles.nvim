@@ -1,11 +1,7 @@
 
 local M = {}
-setmetatable(M, {
-  __index = M,
-  __call = function(cls,...) return cls:init(...) end
-})
 
-function M:init(opt)
+function M.setup(opt)
   vim.o.fileformats = 'unix'
   --
   -- #region Buffer elements

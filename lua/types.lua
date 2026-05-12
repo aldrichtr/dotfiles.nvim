@@ -1,11 +1,12 @@
--- This file defines the type system for my over-engineered neovim
--- initialization
---
+-- ============================================================================
+-- This file defines the type system for my over-engineered neovim config
+-- it provides type information for the classes to the Language Server
+-- ============================================================================
+
 ---@meta
---
---
+
 -- Options definitions -------------------------------------------------------
---
+
 ---@class ManagerOptions
 ---@field public install table The path to where the manager module is installed
 ---@field public target string The path to where packages are installed
@@ -19,7 +20,7 @@
 ---@field public after string[] Options for the "after" phase
 ---@field public managers ManagerOptions[] Options for the managers used in this profile
 
---  -------------------------------------------------------------
+-- Config objects -------------------------------------------------------------
 --
 ---@class Manager
 ---@field public name string Name used to identify the manager type
@@ -52,6 +53,3 @@
 --   setup = { 'ui', 'editor' },
 --   after = { ... }
 -- }
--- setup.ui == lua/config/setup/ui.lua
--- ui.load()
--- editor.load()

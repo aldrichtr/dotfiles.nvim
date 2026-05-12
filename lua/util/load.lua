@@ -83,7 +83,6 @@ end
 ---@return string|nil err Error message if failure occurred.
 function load.try(mod, ...)
   local args = {...}
-  log.trace("🔍 pcall to require " .. mod .. (#args == 0 and " with no options" or " with options"))
 
   local success, result
   if #args == 0 then
@@ -93,10 +92,8 @@ function load.try(mod, ...)
   end
 
   if success then
-    log.trace("✅ pcall was successful")
     return result
   else
-    log.trace("❌ pcall failed: " .. tostring(result))
     return nil, result
   end
 end

@@ -1,7 +1,6 @@
 -- neo-tree.nvim is a plugin to manage the filesystem and other tree like
 -- structures, like git-status, document symbols, etc.
 
----@type LazySpec
 local M = {
   'nvim-neo-tree/neo-tree.nvim',
 }
@@ -15,9 +14,15 @@ M.dependencies = {
   '3rd/image.nvim',
 }
 
-M.keys = require('config.keybindings.neo-tree')
-
 M.cmd = 'Neotree'
+
+M.keys = {
+    -- Toggle neotree filesystem
+    { '<leader>0', '<cmd>Neotree<cr>', desc = 'Reveal the file explorer'},
+    -- Version Control
+    { '<leader>gs', '<cmd>Neotree float git_status<cr>'}
+  }
+
 
 M.opts = function()
   local options = {

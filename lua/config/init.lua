@@ -1,119 +1,131 @@
--- This is the main entry point to my customized neovim configuration
-local types = require('types')
+
+local class = require('extern.middleclass')
+
 -- Dependencies
 local path = require('util.path')
 local load = require('util.load')
 local is   = require('util.is')
 
 -- Static
-local DEFAULT_PROFILE = 'default'
-local PROFILE_DIR = path.join(path.lua, 'profile')
-local CONFIG_DIR  = path.join(path.lua, 'config')
+local defaults = {
+  profile = {
+    root = path.join(path.lua, 'profile'),
+    name = 'default'
+  },
+  stages = { 'before', 'manager', 'setup', 'after' }
+}
 
----@type Configuration
 local Config = class('Config')
-
 
 ---@public
 ---@param opts ConfigurationOptions
----@return Configuration A configuration object that configures nvim
 function Config:initialize(opts)
   self.name = 'Config'
-  log.debug("Initializing", self.name)
-  self.stages = { 'before', 'manager', 'setup', 'after' }
   self.managers = {}
-  if is.present(opts.profile) then
-    self.profile = self:load_profile(opts.profile)
+  local profile_name = opts.profile or defaults.profile.name
+
+  local profile, err = self:load_profile(profile_name)
+  if is.present(err) then
+    vim.notify("Error loading config " .. err, 1)
   else
-    self.profile = self:load_profile(DEFAULT_PROFILE)
+    self:apply(profile)
   end
+
 end
 
 ---@public
----@return string e Returns nil if no errors were reported
-function Config:apply()
-  for _,stage in ipairs(self.stages) do
+---@param p ProfileOptions The profile options to apply
+---@return string|nil e Returns nil if no errors were reported
+function Config:apply(p)
+  local stages = p.stages or defaults.stages
+
+  for _,stage in ipairs(stages) do
     if stage == 'manager' then
-      for name, config in pairs(self.profile.managers) do
+      for name, opts in pairs(p.managers) do
+        self:load_manager(name, opts)
       end
     else
-      self.load_stage(stage)
+      self:load_stage(stage)
     end
   end
 end
 
+-- ============================================================================
+-- Supporting functions
+-- ============================================================================
 
+
+-- #region load profile -------------------------------------------------------
 ---@private
----@param p table|string The name of the profile to load
----@return string err nil if successful, the error message if not
+---@param p string The name of the profile to load
+---@return string|nil err nil if successful, the error message if not
 function Config:load_profile(p)
   if is.empty(p) then
     return "No profile was given to load"
   end
+  local pdir = path.join(defaults.profile.root , p)
 
-  if is.a_table(p) then self.profile = p return nil
-  elseif is.a_string(p.profile) then
-    pdir = path.join(PROFILE_DIR, p.profile)
-    if path.exists(pdir) then
-      local mpath = path.convert_to_module(pdir)
-      if is.present(mpath) then
-        local mod, err = load.try(mpath)
-        if is.present(err) then return err
-        else self.profile = mod return nil
-        end -- if there was an error
-      end -- the path exists
-    end -- p table or string
-  else
-    return string.format("Not a profile '%s'",p)
-  end
+  if path.exists(pdir) then
+    local mpath = path.convert_to_module(pdir)
+    if is.present(mpath) then
+      local mod, err = load.try(mpath)
+      if is.present(err) then
+        return err
+      else
+        self.profile = mod
+        return nil
+      end -- if there was an error
+    end -- the path exists
+  end -- p table or string
 end
+-- #endregion
 
 ---@private
 ---@param name string The name of the manager
 ---@param opt ManagerOptions The options needed to run the manager
+---@return table|nil errors nil if successful, errors otherwise
 function Config:load_manager(name, opt)
   local mgr, err = load.try('manager.' .. name)
   local e = {} -- We will collect errors here
   if is.empty(err) then
     mgr = mgr:new()
-    mgr:configure(config)
+    mgr:configure(opt)
     mgr:load()
     table.insert(self.managers[name], mgr)
   else
     table.insert(e, err)
   end
 
-  if is.present(e) then return e end
+  if is.present(e) then
+    return e
+  else
+    return nil
+  end
 end
 
 ---@private
---- For every item specified in profile.stage, lookup the module in the config
---- directory, if it exists, require it and call load()
+--- require each file in `<profile>/<stage>` directory if it exists
 ---@param stage string The name of the stage to load
----@return string e Returns nil if no errors were reported
-function Config:load_stage(stage)
-  local s = self.profile[stage] or nil
-  local e = {} -- will collect any errors in e
-  if is.a_table(s) then
-    for i,m in ipairs(s) do  -- i == index, m == name of config file to load
-      local p = path.join(CONFIG_DIR, stage, m .. ".lua")
-      log.trace(string.format("%s) Attempting to load %d", i, p))
-      if path.exists(p) then
-        local mod, err = load.try(path.convert_to_module(p))
-        if is.empty(err) then
-          mod.load()
-        else
-          table.insert(e, err)
-        end
-      else
-        table.insert(e, string.format("In stage %s, config %s does not exist", stage, m))
+---@param opts? table Options that should be passed to the stage module
+---@return string|nil e Returns nil if no errors were reported
+function Config:load_stage(stage, opts)
+  local options = opts or {}
+  local e = {} -- We will collect errors here
+  local f_names = {'setup', 'load'}
+  local p = path.join(defaults.profile.root, stage)
+  if path.exists(p) then
+    local m = path.convert_to_module(p)
+    local mod = require(m)
+    for _,f in ipairs(f_names) do
+      if type(mod[f]) then
+        pcall(mod .. f, options)
       end
     end
-  else
-    table.insert(e, string.format("Stage %s is empty in %s profile", stage, self.profile.name))
   end
 
-  if is.present(e) then return e end
+  if is.present(e) then
+    return table.concat(e, '\n')
+  end
 end
 
 return Config

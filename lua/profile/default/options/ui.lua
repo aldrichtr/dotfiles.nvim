@@ -5,7 +5,7 @@
       colorscheme = "darcula-dark",
     },
     fonts = {
-      gui = "SauceCodePro Nerd Font Mono:h11",
+      gui = {"Lilex Nerd Font", ":h10"}
     }
   }
 

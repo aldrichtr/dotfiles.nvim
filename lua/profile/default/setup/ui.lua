@@ -3,13 +3,9 @@
 -- ---------------------------------------------------------------------------
 
 local M = {}
-setmetatable(M, {
-  __index = M,
-  __call  = function(cls, ...) return cls:init(...) end
-})
 
-function M:init(opts)
-  local options = opts.ui or require('options.ui')
+function M.setup(opts)
+  local options = opts.ui or {}
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
   -- Enable modelines in files
@@ -31,7 +27,7 @@ function M:init(opts)
 
   -- Display completion matches in the status line
   vim.opt.wildmenu = true
-  -- Use fuzzy search, and a Pop-Up UiSetupConfigenu
+  -- Use fuzzy search, and a Pop-Up
   vim.opt.wildoptions = { 'fuzzy', 'pum' }
   -- in list form to the longest match
   vim.o.wildmode = 'longest:full'
@@ -44,6 +40,7 @@ function M:init(opts)
   vim.opt.warn = true
   --
   vim.cmd.colorscheme(options.colors.colorscheme)
+
   -- #region gui options
   vim.opt.termguicolors = true
   vim.opt.background = 'dark'
@@ -51,10 +48,8 @@ function M:init(opts)
   vim.opt.winblend = 8
   vim.opt.pumblend = 8
 
-  -- vim.opt.guifont = options.fonts.gui
-  vim.opt.guifont = "Lilex Nerd Font:h11"
-  if vim.g.neovide then M:setup_neovide() end
-
+  vim.opt.guifont = options.fonts.gui
+  if vim.g.neovide then M.setup_neovide() end
   -- #endregion gui options
 
   -- Windows keep this many lines above and below the cursor
@@ -67,7 +62,7 @@ function M:init(opts)
 end
 
 ---Configuration for neovide, a "gui" for neovim
-function M:setup_neovide()
+function M.setup_neovide()
   -- g:neovide_transparency should be 0 if you want to unify transparency of
   -- content and title bar.
   vim.g.neovide_opacity = 0.95

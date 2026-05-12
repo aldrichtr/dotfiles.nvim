@@ -6,8 +6,7 @@ local M = {
   install = {},
   -- This is where language servers are installed
   target = path.lsp.root,
-  -- This is where the lsp config modules are 'config/lsp'
-  source = {path.join(path.config, "langserv")},
+  source = {path.join(path.lua, "profile", "default", "servers")},
   setup = {},
 }
 

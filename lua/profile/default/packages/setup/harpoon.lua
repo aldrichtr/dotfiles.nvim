@@ -1,12 +1,53 @@
 
-local function harpoon_keys()
+local M = {
+  'ThePrimeagen/harpoon'
+}
+
+M.branch = 'harpoon2'
+
+M.dependencies = {
+  'nvim-lua/plenary.nvim',
+}
+
+M.event = { 'BufReadPre' }
+
+M.opt = {
+  save_on_toggle = false,
+  sync_on_ui_close = true,
+}
+
+M.config = function()
+  local harpoon = require('harpoon')
+  local harpoon_extensions = require("harpoon.extensions")
+
+  -- Add keys to the harpoon ui
+  harpoon:extend({
+    UI_CREATE = function(cx)
+      vim.keymap.set("n", "<C-v>", function()
+        harpoon.ui:select_menu_item({ vsplit = true })
+      end, { buffer = cx.bufnr })
+
+      vim.keymap.set("n", "<C-x>", function()
+        harpoon.ui:select_menu_item({ split = true })
+      end, { buffer = cx.bufnr })
+
+      vim.keymap.set("n", "<C-t>", function()
+        harpoon.ui:select_menu_item({ tabedit = true })
+      end, { buffer = cx.bufnr })
+    end,
+  })
+
+  harpoon:extend(harpoon_extensions.builtins.highlight_current_file())
+end
+
+M.keys = function()
   local wk = require('which-key')
   local harpoon = require('harpoon')
   local list = harpoon:list()
 
-  harpoon:setup()
   wk.add({ '<leader><leader>', group = 'Harpoon operations' })
-  local keys = {
+
+  return {
     { '<leader><leader>1', function() list:select(1) end, desc = 'Jump to harpoon file 1' },
     { '<leader><leader>2', function() list:select(2) end, desc = 'Jump to harpoon file 2' },
     { '<leader><leader>3', function() list:select(3) end, desc = 'Jump to harpoon file 3' },
@@ -22,7 +63,7 @@ local function harpoon_keys()
     { '<leader><leader>p', function() list:prev() end, desc = 'Jump to previous mark' },
     { '<leader><leader>m', function() harpoon.ui:toggle_quick_menu(list) end, desc = 'Show the harpoon quick menu', }
   }
-  return keys
+
 end
 
-return harpoon_keys
+return M

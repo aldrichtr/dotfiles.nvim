@@ -1,7 +1,6 @@
 -- log.lua
 --
 local path = require("util.path")
-local switch = require("util.switch")
 local is = require("util.is")
 
 local copy_t = vim.tbl_deep_extend
@@ -61,7 +60,7 @@ function Logger:initialize(config)
   -- setmetatable(self, { __index = function(cls,lvl, ...) return cls:write(string.upper(lvl), ...) end })
 end
 
--- Internal function to format log messages
+--- @private
 function Logger:format_message(message)
   local completed = self.format
   local date_pattern = "!d%<(.*)%>"
@@ -70,16 +69,20 @@ function Logger:format_message(message)
   local lv_shrt_up = "!L"
   local lv_shrt_lw = "!l"
   local mess_pattern = "!m"
+  -- perform substitutions
   completed, _ = string.gsub(completed, lv_full_up, string.upper(self.level))
   completed, _ = string.gsub(completed, lv_full_lw, string.lower(self.level))
   completed, _ = string.gsub(completed, lv_shrt_up, string.upper(string.sub(self.level, 0, 1)))
   completed, _ = string.gsub(completed, lv_shrt_lw, string.lower(string.sub(self.level, 0, 1)))
-  date_frmt = string.match(completed, date_pattern)
-  date_strg = os.date(date_frmt)
-  completed, _ = string.gsub(completed, date_pattern, date_strg)
+
+  local date_format = string.match(completed, date_pattern)
+  local msg_date = os.date(date_format)
+
+  completed, _ = string.gsub(completed, date_pattern, msg_date)
   completed, _ = string.gsub(completed, mess_pattern, message)
   return completed
 end
+
 
 function Logger:parse_caller_info(c)
 
