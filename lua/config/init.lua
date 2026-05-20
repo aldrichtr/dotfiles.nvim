@@ -12,7 +12,7 @@ local defaults = {
     root = path.join(path.lua, 'profile'),
     name = 'default'
   },
-  stages = { 'before', 'manager', 'setup', 'after' }
+  stages = { 'before', 'managers', 'setup', 'after' }
 }
 
 local Config = class('Config')
@@ -40,7 +40,7 @@ function Config:apply(p)
   local stages = p.stages or defaults.stages
 
   for _,stage in ipairs(stages) do
-    if stage == 'manager' then
+    if stage == 'managers' then
       for name, opts in pairs(p.managers) do
         self:load_manager(name, opts)
       end
