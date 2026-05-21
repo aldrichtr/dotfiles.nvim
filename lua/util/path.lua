@@ -69,7 +69,7 @@ end
 function Path.convert_to_module(file)
 	local filename, relpath, modpath
 	local root = normalize(Path.lua)
-	log.trace("converting file '" .. file .. "' to module")
+	Logger:trace("converting file '" .. file .. "' to module")
 	filename = normalize(file)
 
 	if vim.fs.basename(filename):match("^init") then
@@ -77,10 +77,10 @@ function Path.convert_to_module(file)
 	else
 		filename = filename:gsub("%.lua", "")
 	end
-	log.trace("Getting relative path for '" .. filename .. "' from '" .. root .. "'")
+	Logger:trace("Getting relative path for '" .. filename .. "' from '" .. root .. "'")
 	relpath = vim.fs.relpath(root, filename)
 	if is.present(relpath) then
-		log.trace("Now creating module name from '" .. relpath .. "'")
+		Logger:trace("Now creating module name from '" .. relpath .. "'")
 		modpath = relpath:gsub("/", ".")
 		return modpath
 	else
@@ -134,7 +134,7 @@ function Path.find(...)
 
 	if is.a_table(params) then
 		for k,v in pairs(params) do
-			log.trace(string.format("Parameter '%s' => '%s'", k, v))
+			Logger:trace(string.format("Parameter '%s' => '%s'", k, v))
 		end
 	end
 
@@ -180,13 +180,13 @@ function Path.find(...)
 	end
 	-- -----------------------------------------------------------------------
 
-	log.trace(string.format("Finding files in '%s' that match '%s'", details.path, match))
+	Logger:trace(string.format("Finding files in '%s' that match '%s'", details.path, match))
 	files = vim.fs.find(
 		function(name, path)
 			return name:match(match) and not exclude[name]
 		end , details)
 
-	log.trace("- found " .. table.concat(files, ", "))
+	Logger:trace("- found " .. table.concat(files, ", "))
 	return files
 end
 

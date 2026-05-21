@@ -14,7 +14,7 @@ function load.all(root, ...)
   if is.empty(root) then
     error("❌ 'root' must not be empty")
   end
-  log.trace(string.format("Loading all lua files in '%s'", root))
+  Logger:trace(string.format("Loading all lua files in '%s'", root))
   local options = ...
 
   local files = path.find({
@@ -26,7 +26,7 @@ function load.all(root, ...)
   local result
   for _, file in ipairs(files) do
     local mod = path.convert_to_module(file)
-    log.trace("loading module", mod)
+    Logger:trace("loading module", mod)
     if is.present(options) then
       result = require(mod){options}
     else
@@ -44,7 +44,7 @@ end
 --- ```lua
 --- local mod, err = load.try("my.module")
 --- if not mod then
----   log.error("Failed to load module: " .. err)
+---   Logger:error("Failed to load module: " .. err)
 --- end
 --- ```
 ---
@@ -52,7 +52,7 @@ end
 --- ```lua
 --- local result, err = load.try("my.module.init", "arg1", "arg2")
 --- if not result then
----   log.warn("Module init failed: " .. err)
+---   Logger:warn("Module init failed: " .. err)
 --- end
 --- ```
 ---
@@ -110,7 +110,7 @@ function load.xtry(mod, handler, ...)
   end
 
   local args = {...}
-  log.trace("🔍 xpcall to require " .. mod .. (#args == 0 and " with no options" or " with options"))
+  Logger:trace("🔍 xpcall to require " .. mod .. (#args == 0 and " with no options" or " with options"))
 
   local called
   if #args == 0 then
@@ -122,10 +122,10 @@ function load.xtry(mod, handler, ...)
   local success, result = xpcall(called, handler)
 
   if success then
-    log.trace("✅ xpcall was successful")
+    Logger:trace("✅ xpcall was successful")
     return result
   else
-    log.trace("❌ xpcall failed: " .. tostring(result))
+    Logger:trace("❌ xpcall failed: " .. tostring(result))
     return nil, result
   end
 end
@@ -137,7 +137,7 @@ end
 ---@return any|nil result The required module or nil on failure.
 function load.safe(mod, ...)
   return load.xtry(mod, function(err)
-    log.error("❌ load.safe: Failed to load " .. mod .. ": " .. tostring(err))
+    Logger:error("❌ load.safe: Failed to load " .. mod .. ": " .. tostring(err))
     return nil
   end, ...)
 end

@@ -1,10 +1,15 @@
 
 local M = {}
 
-function M.setup(opt)
+setmetatable(M, {
+  __index = M,
+  __call  = function(cls, ...) return cls:init(...) end
+})
+
+function M:init(opt)
   vim.o.fileformats = 'unix'
   --
-  -- #region Buffer elements
+  -- SECTION Buffer elements
 
   -- Enable modelines in files
   vim.o.modeline = true
@@ -13,7 +18,7 @@ function M.setup(opt)
 
   -- ! use the vscode region markers for folding by default
   vim.o.foldmethod = 'marker'
-  vim.o.foldmarker = '#region,#endregion'
+  vim.o.foldmarker = 'SECTION,!SECTION'
 
   vim.o.number = true -- Show the current line numbers
   vim.o.relativenumber = true -- and relative number
@@ -22,7 +27,7 @@ function M.setup(opt)
   vim.o.cursorline = true -- Highlight the current line
   vim.opt.cursorlineopt = { 'number', 'line' }
 
-  -- #region spaces and tabs
+  -- SECTION spaces and tabs
   vim.o.expandtab = true -- Insert spaces instead of tabs
   vim.o.smarttab = true  -- Insert spaces according to shift width
   vim.o.shiftwidth = 2   -- when shifting lines
@@ -34,22 +39,22 @@ function M.setup(opt)
     tab = '>-',
     trail = '·',
   }
-  -- #endregion spaces and tabs
-  -- #endregion Buffer elements
+  -- !SECTION spaces and tabs
+  -- !SECTION Buffer elements
   -- ------------------------------------------------------------------------
 
   -- ------------------------------------------------------------------------
-  -- #region Editor functions
+  -- SECTION Editor functions
 
-  -- #region search
+  -- SECTION search
   vim.o.hlsearch = true -- Highlight results of search
   vim.o.incsearch = true --  incrementally
 
   vim.o.ignorecase = true -- Ignore case,
   vim.o.smartcase = true --  unless there are capitals in the pattern
   vim.o.magic = true -- Change the special characters in search patterns
-  -- #endregion search
-  -- #endregion Editor functions
+  -- !SECTION search
+  -- !SECTION Editor functions
   -- ------------------------------------------------------------------------
 end
 

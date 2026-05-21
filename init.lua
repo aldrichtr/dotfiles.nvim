@@ -1,20 +1,24 @@
 
+-- --------------------------------------------------------------------------------------------------------
+-- Establish a logging facility
+-- NOTE: I made the logger global here because it can be used anywhere in the init that I'm having issues
+local logger = require('util.logger')
 
--- I downloaded and modified the vlog script.
--- NOTE: I made it global here because it can be used anywhere in the init that I'm having issues
-
-_G.log = require('util.log')
-
-log.debug(string.rep("-",40))
-log.debug("- Beginning neovim initialization script")
-
+_G.Logger = logger:new({
+  level = "DEBUG",
+  format = "[!d<%y.%m.%d>]!LL: (!p:!n) !m"
+})
 -- ------------------------------------------------------------------------------
+
+Logger:debug("- Beginning neovim initialization script" .. string.rep("-", 40))
+
 local Config = require('config')
 
-Config = Config:new({profile = 'default'})
+local options = { profile = "default" }
 
+Config = Config:new(options)
+Logger:debug("Applying %s profile", options.profile)
 Config:apply()
 
 -- ------------------------------------------------------------------------------
-log.debug("Initialization complete")
-log.debug(string.rep("-",40))
+Logger:debug("Initialization complete" .. string.rep("-",40))

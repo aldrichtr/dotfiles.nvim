@@ -14,11 +14,17 @@ local M = {
   },
   -- where packages will be installed to
   target = path.join(path.data, "lazy"),
+  packages = 'packages',
   source = { "before", "themes", "setup", "after" },
   -- these options will be passed to the lazy.setup() function
   setup = {
     -- see https://lazy.folke.io/configuration for all options
-    spec = {},
+    spec = {
+      { import = "profile.default.packages.before" },
+      { import = "profile.default.packages.themes" },
+      { import = "profile.default.packages.setup" },
+      { import = "profile.default.packages.after" }
+    },
     lockfile = path.join(path.data, "/lazy-lock.json"),
   }
 }

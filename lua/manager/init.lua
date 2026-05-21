@@ -1,4 +1,5 @@
 
+local class = require('extern.middleclass')
 local is = require('util.is')
 
 ---@class Manager
@@ -15,6 +16,7 @@ Manager = class('Manager')
 ---@param opts ManagerOptions
 function Manager:initialize(opts)
   self.name = 'manager'
+  self.options = {}
   if is.present(opts) then
    self.options = vim.tbl_deep_extend('force', self.options, opts)
   end

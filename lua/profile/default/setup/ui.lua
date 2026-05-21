@@ -3,8 +3,12 @@
 -- ---------------------------------------------------------------------------
 
 local M = {}
+setmetatable(M, {
+  __index = M,
+  __call  = function(cls, ...) return cls:init(...) end
+})
 
-function M.setup(opts)
+function M:init(opts)
   local options = opts.ui or {}
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
@@ -49,7 +53,7 @@ function M.setup(opts)
   vim.opt.pumblend = 8
 
   vim.opt.guifont = options.fonts.gui
-  if vim.g.neovide then M.setup_neovide() end
+  if vim.g.neovide then M:setup_neovide() end
   -- #endregion gui options
 
   -- Windows keep this many lines above and below the cursor
