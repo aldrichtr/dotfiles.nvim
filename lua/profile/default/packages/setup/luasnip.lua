@@ -8,36 +8,18 @@ M.version = 'v2.*'
 -- jsregexp is installed via luarocks, so we dont need to build it here
 M.build = false
 
-M.init = function()
-  local vscode = require('luasnip.loaders.from_vscode')
+M.config = function()
   local lua = require('luasnip.loaders.from_lua')
   -- TODO: I want to get this from the options, but this file is required
   --       by options and so it causes a loop to require options here
-  local root = path.join(path.init, 'snipppets')
+  local root = path.join(path.lua, 'snippets')
 
   -- load json format "vscode style" snippets
-  vscode.lazy_load({ paths = { path.join(root, 'vscode') } })
 
   -- load lua format "luasnip native" snippets
-  lua.lazy_load({ paths = { path.join(root, 'lua') } })
+  lua.lazy_load({ paths = root })
 end
 
-M.opts = {
-  keep_roots = true,
-  link_roots = true,
-  link_children = true,
 
-  -- treesitter-hl has 100, use something higher (default is 200).
-  ext_base_prio = 300,
-  -- minimal increase in priority.
-  ext_prio_increase = 1,
-  enable_autosnippets = true,
-  -- mapping for cutting selected text so it's usable as SELECT_DEDENT,
-  -- SELECT_RAW or TM_SELECTED_TEXT (mapped via xmap).
-  -- luasnip uses this function to get the currently active filetype.  Use
-  -- treesitter for getting the current filetype allows correctly resolving
-  -- the current filetype in eg. a markdown-code block or `vim.cmd()`.
-  -- ft_func = function() require('luasnip.extras.filetype_functions').from_cursor_pos() end,
-}
 
 return M

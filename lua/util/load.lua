@@ -12,7 +12,7 @@ local load = {}
 ---@return table modules Table of required modules.
 function load.all(root, ...)
   if is.empty(root) then
-    error("❌ 'root' must not be empty")
+    Logger:error("'root' must not be empty")
   end
   Logger:trace(string.format("Loading all lua files in '%s'", root))
   local options = ...
@@ -28,7 +28,7 @@ function load.all(root, ...)
     local mod = path.convert_to_module(file)
     Logger:trace("loading module", mod)
     if is.present(options) then
-      result = require(mod){options}
+      result = require(mod)(options)
     else
       result = require(mod)
     end

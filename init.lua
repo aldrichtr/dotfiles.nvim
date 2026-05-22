@@ -5,7 +5,7 @@
 local logger = require('util.logger')
 
 _G.Logger = logger:new({
-  level = "DEBUG",
+  level = "NONE",
   format = "[!d<%y.%m.%d>]!LL: (!p:!n) !m"
 })
 -- ------------------------------------------------------------------------------

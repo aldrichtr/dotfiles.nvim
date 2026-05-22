@@ -47,32 +47,18 @@ setmetatable(M, {
 
 
 function M:init(opts)
-  log.debug("Loading Keybindings")
+  Logger:debug("Loading Keybindings")
 
   local whichkey = require('which-key')
-  local builtin = require('telescope.builtin')
-  local t_utils = require('telescope.utils')
-  local ufo = require('ufo')
-  local conform = require('conform')
   -- ----------------------------------------------------------------------------------------------------------------
   -- Mappings start here
   whichkey.add({
     -- #region "Global" keys
-    {
-      mode = { 'n', 'i', 'v' },
-      { '<C-S-]>', '<cmd>Neotree toggle<cr>', desc = 'Toggle the Neotree window' },
-      { '<C-S-[>', '<cmd>AerialToggle<cr>', desc = 'Toggle the Aerial window' },
-    }, -- #endregion "Global" keys
     -- #region normal mode bindings
     {
       mode = { 'n' },
       -- #region General
-      { 'K', 'kJ', desc = 'Join this line with previous line' },
-      {
-        'Y',
-        'y$',
-        desc = 'Map Y to yank until EOL, rather than act as yy',
-      },
+      { 'Y', 'y$', desc = 'Map Y to yank until EOL, rather than act as yy', },
 
       { '<A-Down>', '<cmd>move +1<cr>==', desc = 'Move line down' },
       { '<A-Up>', '<cmd>move -2<cr>==', desc = 'Move line up' },
@@ -85,17 +71,12 @@ function M:init(opts)
         desc = 'redraw screen and turn off search highlighting',
       },
 
-      { '<C-S-v>', '"*p', desc = 'Paste from system clipboard' },
+      { '<C-S-y>', '"+y', desc = 'Yank to system clipboard' },
+      { '<C-S-v>', '"+p', desc = 'Paste from system clipboard' },
       -- #endregion General
 
       -- #region <leader> Leader key operations
       -- #region <leader> - Top level
-      { '<leader>?', function() whichkey.show({ global = true }) end, desc = 'Show available keys' },
-      {
-        '<leader>=',
-        function() conform.format({ async = true, lsp_format = 'fallback' }) end,
-        desc = 'Format document (conform)',
-      },
       -- #endregion <leader> - Top level
       -- #region <leader>digit - Switching windows
       -- #endregion <leader>digit - Switching windows
@@ -105,9 +86,6 @@ function M:init(opts)
       -- #endregion <leader><leader> - Harpoon
 
       -- #region <leader>! - Todo comments
-      { '<leader>!', group = 'Todo comments' },
-      { '<leader>!n', function() require('todo-comments').jump_next() end, desc = 'Next todo comment' },
-      { '<leader>!p', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' },
       -- #endregion <leader>! - Todo comments
 
       -- #region <leader>a - Unused
@@ -124,18 +102,9 @@ function M:init(opts)
       -- #endregion <leader>e - Unused
 
       -- #region <leader>f - File operations
-      { '<leader>f', group = 'Files' },
-      {
-        '<leader>ff',
-        function() builtin.find_files({ cwd = t_utils.buffer_dir() }) end,
-        desc = 'select from files in current directory',
-      },
       -- #endregion <leader>f - File operations
 
       -- #region <leader>g - git commands (Neogit)
-      { '<leader>g', group = 'Git' },
-      { '<leader>gd', '<cmd>Neogit diff<cr>', desc = 'Git diff view' },
-      { '<leader>gl', '<cmd>Neogit log<cr>', desc = 'Git log view' },
       -- #endregion <leader>g - git commands (Neogit)
 
       -- #region <leader>h - Unused
@@ -172,114 +141,23 @@ function M:init(opts)
       -- #endregion <leader>r - Unused
 
       -- #region <leader>s - Search operations
-      { '<leader>s', group = 'Search' },
-      { '<leader>sb', function() builtin.buffers() end, desc = 'Search for buffers in current tab' },
-      { '<leader>sB', '<cmd>Telescope scope buffers<CR>', desc = 'Search for buffers in current tab' },
-      {
-        '<leader>sc',
-        function() builtin.find_files({ cwd = path.config }) end,
-        desc = 'Search for files in the nvim config directory',
-      },
-      {
-        '<leader>sd',
-        function() builtin.find_files({ cwd = path.dotfiles }) end,
-        desc = 'Search for files in the dotfiles directory',
-      },
-      { '<leader>sg', function() builtin.live_grep() end, desc = 'select from grep results in the current file' },
-      { '<leader>sh', function() builtin.help_tags() end, desc = 'Search for help tags' },
-      { '<leader>sk', function() builtin.keymaps() end, desc = 'Search for keymaps' },
-      { '<leader>sm', '<cmd>Telescope harpoon marks<cmd>', desc = 'Select from harpoon marks' },
-      {
-        '<leader>sp',
-        function() require('telescope').extensions.projects.projects({}) end,
-        desc = 'Search for projects',
-      },
-      { '<leader>sS', '<cmd>Telescope aerial<cmd>', desc = 'Select from symbol (aerial)' },
-      { '<leader>st', '<cmd>TodoTelescope<cr>', desc = 'Search for Todo comments in the current directory' },
-      {
-        '<leader>sw',
-        function()
-          local word = vim.fn.expand('<cword>')
-          builtin.grep_string({ search = word })
-        end,
-        desc = 'Search for the word under cursor',
-      },
-      {
-        '<leader>sW',
-        function()
-          local word = vim.fn.expand('<cWORD>')
-          builtin.grep_string({ search = word })
-        end,
-        desc = 'Search for the WORD under cursor',
-      },
       -- #endregion <leader>s - Search operations
 
       -- #region <leader>t - Tab operations
-      { '<leader>t', group = 'Tab operations' },
-      { '<leader>ta', '<cmd>tabnew<cr>', desc = 'Add a new tab' },
-      --
-      { '<leader>tc', group = 'Close tab' },
-      { '<leader>tcc', '<cmd>tabclose<cr>', desc = 'Close the current tab' },
-      { '<leader>tcn', '<cmd>+tabclose<cr>', desc = 'Close the next tab' },
-      { '<leader>tcp', '<cmd>-tabclose<cr>', desc = 'Close the previous tab' },
-      { '<leader>tco', '<cmd>tabonly<cr>', desc = 'Close all other tabs' },
-      { '<leader>tq', '<cmd>tabclose<cr>', desc = 'Close the current tab' },
-      --
-      { '<leader>tm', group = 'Move tab' },
-      { '<leader>tm^', '<cmd>0tabmove<cr>', desc = 'Move tab to beginning' },
-      { '<leader>tm$', '<cmd>$tabmove<cr>', desc = 'Move tab to end' },
-      { '<leader>tmp', '<cmd>-tabmove<cr>', desc = 'Move tab left' },
-      { '<leader>tmn', '<cmd>+tabmove<cr>', desc = 'Move tab right' },
-      --
-      { '<leader>t^', '<cmd>tabfirst<cr>', desc = 'Focus on first tab' },
-      { '<leader>tn', '<cmd>tabnext<cr>', desc = 'Focus on next tab' },
-      { '<leader>tp', '<cmd>tabprev<cr>', desc = 'Focus on previous tab' },
-      { '<leader>t$', '<cmd>tablast<cr>', desc = 'Focus on last tab' },
-
-      { '<leader>tr', '<cmd>BufferLineTabRename<cr>', desc = 'Rename the current tab' },
       -- #endregion <leader>t - Tab operations
 
       -- #region <leader>T - Terminal operations
-      { '<leader>T', group = 'Terminal operations' },
       -- #endregion <leader>T - Terminal operations
       -- #region <leader>u - Unused
       -- #endregion <leader>u - Unused
 
       -- #region <leader>v - View application components
-      { '<leader>v', group = 'View application components' },
-      { '<leader>vd', '<cmd>Dashboard<CR>', desc = 'View the dashboard' },
-      {
-        '<leader>ve',
-        '<cmd>Neotree reveal position=right source=filesystem dir=%:h<CR>',
-        desc = 'Reveal the filesystem explorer window',
-      },
-      {
-        '<leader>vg',
-        '<cmd>Neotree reveal position=float source=git_status<CR>',
-        desc = 'View the git status in a floating window',
-      },
-      { '<leader>vk', function() whichkey.show({ global = true }) end, desc = 'Show keybindings' },
-      { '<leader>vl', '<cmd>Lazy<cr>', desc = 'Lazy package manager console' },
-      { '<leader>vn', function() utils.toggle_numbers() end, desc = 'Toggle relative line numbers' },
-      { '<leader>vo', '<cmd>AerialToggle!<CR>', desc = 'Toggle the code outline' },
       -- #endregion <leader>v - View application components
 
       -- #region <leader>w - Window operations
-      { '<leader>w', group = 'Windows operations', proxy = '<c-w>' },
       -- #endregion <leader>w - Window operations
 
       -- #region <leader>x - Diagnostics
-      { '<leader>x', group = 'Diagnostics' },
-      { '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', desc = 'Diagnostics (Trouble)' },
-      { '<leader>xX', '<cmd>Trouble diagnostics toggle filter.buf=0<cr>', desc = 'Buffer Diagnostics (Trouble)' },
-      { '<leader>xs', '<cmd>Trouble symbols toggle focus=false<cr>', desc = 'Symbols (Trouble)' },
-      {
-        '<leader>xl',
-        '<cmd>Trouble lsp toggle focus=false win.position=right<cr>',
-        desc = 'LSP Definitions / references / ... (Trouble)',
-      },
-      { '<leader>xL', '<cmd>Trouble loclist toggle<cr>', desc = 'Location List (Trouble)' },
-      { '<leader>xq', '<cmd>Trouble qflist toggle<cr>', desc = 'Quickfix List (Trouble)' },
       -- #endregion <leader>x - Diagnostics
 
       -- #region <leader>y - Unused
@@ -291,9 +169,6 @@ function M:init(opts)
       -- #endregion <leader> Leader key operations
 
       -- #region z - Fold commands
-      { 'z', group = 'Folding operations' },
-      { 'zM', function() ufo.closeAllFolds() end, desc = 'Close all folds with UFO' },
-      { 'zR', function() ufo.openAllFolds() end, desc = 'Open all folds with UFO' },
       -- #endregion z - Fold commands
     }, -- #endregion normal mode bindings
 
@@ -308,16 +183,6 @@ function M:init(opts)
       -- #endregion General
 
       -- #region <leader>T Terminal operations
-      { '<leader>T', group = 'Terminal operations' },
-      {
-        '<leader>Te',
-        function()
-          local tterm = require('toggleterm')
-          local trim_spaces = true
-          tterm.send_lines_to_terminal('visual_selection', trim_spaces, { args = vim.v.count })
-        end,
-        desc = 'Execute selection in terminal',
-      },
 
       -- #endregion <leader>T Terminal operations
     },

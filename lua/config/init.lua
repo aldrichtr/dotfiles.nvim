@@ -1,12 +1,10 @@
 
+-- SECTION Dependencies
 local class = require('extern.middleclass')
-
--- Dependencies
 local path = require('util.path')
 local load = require('util.load')
 local is   = require('util.is')
 
--- Static
 local defaults = {
   profile = {
     root = path.join(path.lua, 'profile'),
@@ -14,6 +12,10 @@ local defaults = {
   },
   stages = { 'before', 'managers', 'setup', 'after' }
 }
+
+-- !SECTION
+
+-- SECTION Initialization
 
 local Config = class('Config')
 
@@ -32,9 +34,11 @@ function Config:initialize(opts)
   else
     Logger:info("Success")
   end
-
 end
+-- !SECTION
 
+-- ============================================================================
+-- SECTION Public functions
 ---@public
 ---@param p string The profile to apply
 ---@return string|nil e Returns nil if no errors were reported
@@ -52,17 +56,19 @@ function Config:apply(p)
         self:load_manager(name, self.options)
       end
     else
-      self:load_stage(stage)
+      self:load_stage(stage, self.options)
     end
   end
 end
-
--- ============================================================================
--- Supporting functions
+-- !SECTION
 -- ============================================================================
 
 
--- #region load profile -------------------------------------------------------
+-- ============================================================================
+-- SECTION Supporting functions
+
+
+-- SECTION load profile -------------------------------------------------------
 ---@private
 ---@param p string The name of the profile to load
 ---@return string|nil err nil if successful, the error message if not
@@ -82,16 +88,18 @@ function Config:load_profile(p)
         mod['module'] = mpath
         mod['root'] = pdir
         self.options = mod
+        _G.profile = { name = name, path = pdir, last = os.date() }
         return nil
       end -- if there was an error
     end -- the path exists
   end -- p table or string
 end
--- #endregion
+-- !SECTION
 
+-- SECTION Load manager
 ---@private
 ---@param name string The name of the manager
----@param opt ManagerOptions The options needed to run the manager
+---@param opt ConfigurationOptions The options needed to run the manager
 ---@return table|nil errors nil if successful, errors otherwise
 function Config:load_manager(name, opt)
   Logger:debug("Loading manager '%s'", name)
@@ -115,9 +123,11 @@ function Config:load_manager(name, opt)
     return nil
   end
 end
+-- !SECTION
 
+-- SECTION Load stage
 ---@private
---- require each file in `<profile>/<stage>` directory if it exists
+--- require each file in <stage> directory if it exists
 ---@param stage string The name of the stage to load
 ---@param opts? table Options that should be passed to the stage module
 ---@return string|nil e Returns nil if no errors were reported
@@ -130,5 +140,10 @@ function Config:load_stage(stage, opts)
     load.all(stage_dir,opts)
   end
 end
+-- !SECTION
+
+-- !SECTION
+-- ============================================================================
 
 return Config
+

@@ -66,4 +66,9 @@ M.opts = {
   }
 }
 
+M.keys = {
+  { '<leader>!n', function() require('todo-comments').jump_next() end, desc = 'Next todo comment' },
+  { '<leader>!p', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' }
+}
+
 return M

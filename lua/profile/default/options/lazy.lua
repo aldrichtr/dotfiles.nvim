@@ -20,10 +20,10 @@ local M = {
   setup = {
     -- see https://lazy.folke.io/configuration for all options
     spec = {
-      { import = "profile.default.packages.before" },
+      -- { import = "profile.default.packages.before" },
       { import = "profile.default.packages.themes" },
       { import = "profile.default.packages.setup" },
-      { import = "profile.default.packages.after" }
+      -- { import = "profile.default.packages.after" }
     },
     lockfile = path.join(path.data, "/lazy-lock.json"),
   }

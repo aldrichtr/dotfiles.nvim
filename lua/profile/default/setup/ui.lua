@@ -9,7 +9,7 @@ setmetatable(M, {
 })
 
 function M:init(opts)
-  local options = opts.ui or {}
+  local options = opts.setup.ui or {}
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
   -- Enable modelines in files

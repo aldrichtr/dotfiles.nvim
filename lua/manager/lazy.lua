@@ -1,4 +1,5 @@
 
+-- REGION Dependencies
 local class = require('extern.middleclass')
 local path = require('util.path')
 local load = require('util.load')
@@ -14,7 +15,10 @@ local _install_ = {
     check = path.join(path.data, 'lazy', 'lazy.nvim', '.git')
   }
 }
+-- !REGION
 
+
+-- SECTION  Initialization
 local Manager = require('manager')
 
 LazyManager = class('LazyManager', Manager)
@@ -27,6 +31,8 @@ function LazyManager:initialize(opts)
     self.options = opts
   end
 end
+
+-- !SECTION
 
 function LazyManager:configure(opts)
   Manager.configure(self, opts)
@@ -54,34 +60,22 @@ function LazyManager:load()
 
   local stats = lazy_nvim.stats()
   if is.filled(stats.count) then
-    Logger:debug("Lazy.nvim finished loading", stats.count, "plugins")
+    Logger:info("Lazy.nvim finished loading %s out of %s", stats.loaded, stats.count)
+
+    self:register_commands()
   end
 end
 
----Build the LazySpec from lua files in the `packages/**` files
----@return LazySpec
-function LazyManager:build_spec()
-  local root = path.join(self.options.root, self.options.packages)
-  local options = self.options.managers.lazy
-  local result = {}
-  for _, package in ipairs(options.source) do
-    local p = path.join(root, package)
-    local m = path.convert_to_module(p)
-    table.insert(result, { import = m })
-  end
-  Logger:debug("finished building spec")
-  return result
-end
 
 ---@return boolean True if Lazy.nvim is already installed
 function LazyManager:isInstalled()
   local options = self.options.managers.lazy
   if vim.fn.isdirectory(options.install.check) then
     Logger:debug(" - it is installed")
-    return 1
+    return true
   else
     Logger:debug(" - it is not installed")
-    return 0
+    return false
   end
 
 end
@@ -103,6 +97,37 @@ function LazyManager:install(opts)
   else
     Logger:trace("- Success!")
   end
+end
+
+function LazyManager:register_commands()
+  local root = path.join(self.options.root, self.options.packages)
+  local enabled = { 'before', 'after', 'themes', 'setup' }
+  local disabled = 'disabled'
+
+  vim.api.nvim_create_user_command('DisablePlugin',
+  function(opts)
+    local name = opts.fargs[1]
+    local p = name .. ".lua"
+    local pkg, dpkg
+    for _, e in ipairs(enabled) do
+      pkg = path.join(root, e, p)
+      dpkg = path.join(root, disabled, p)
+      if path.exists(pkg) and not path.exists(dpkg) then
+        os.rename(pkg, dpkg)
+      end
+    end
+  end, {nargs = 1})
+
+  vim.api.nvim_create_user_command('EnablePlugin',
+  function(opts)
+    local name = opts.fargs[1]
+    local p = name .. ".lua"
+    local pkg = path.join(root, 'setup', p)
+    local dpkg = path.join(root, 'disabled', p)
+    if path.exists(dpkg) and not path.exists(pkg) then
+      os.rename(d,s)
+    end
+  end, {nargs = 1})
 end
 
 return LazyManager
