@@ -1,8 +1,9 @@
 -- Abbreviations provided when loaded by luasnip
+local ls = require('luasnip')
+local s  = ls.snippet
 
-M = {}
 
-M.all = {
+M = {
   s({ trig = ",section", snippetType="autosnippet", desc = "Section comment markers"},
     fmta(
       [[
@@ -27,4 +28,3 @@ M.all = {
 }
 
 return M
-

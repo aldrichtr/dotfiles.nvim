@@ -1,7 +1,6 @@
 -- lualine is a status bar for neovim that can be used for the application
 -- status lines
 
----@type LazySpec
 local M = {
   "nvim-lualine/lualine.nvim",
 }
@@ -9,6 +8,9 @@ local M = {
 M.lazy = false
 
 M.dependencies = { "nvim-tree/nvim-web-devicons" }
+
+-- SECTION Global options
+
 
 local global_options = {
   icons_enabled = true,
@@ -26,6 +28,8 @@ local global_options = {
     winbar = 1000,
   },
 }
+
+-- !SECTION Global options
 
 -- Currently using the bufferline.nvim plugin which uses the tabline
 -- local tabline_config = {}

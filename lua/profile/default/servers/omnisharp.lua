@@ -28,4 +28,3 @@ function M.config(user_config)
 end
 
 return M
-

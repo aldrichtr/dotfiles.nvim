@@ -9,7 +9,14 @@ M.lazy = false
 M.opts = {
  bigfile = { enabled = true },
  dashboard = { enabled = true },
- explorer = { enabled = true },
+ explorer = {
+   enabled = true,
+   layout = {
+     preset = "sidebar",
+     preview = false,
+     position = "right",
+   }
+ },
  indent = { enabled = true },
  input = { enabled = true },
  picker = { enabled = true },
@@ -22,6 +29,7 @@ M.opts = {
  }
 
 M.keys = {
+  -- SECTION Pickers
     -- Top Pickers & Explorer
     { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
@@ -86,6 +94,7 @@ M.keys = {
     { "gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
     { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+  -- !SECTION Pickers
 }
 
  return M
