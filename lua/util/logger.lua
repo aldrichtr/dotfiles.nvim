@@ -1,7 +1,8 @@
 -- log.lua
 --
-local path = require("util.path")
-local is = require("util.is")
+local path = require('config.path')
+local fs      = require('util.fs')
+local is = require('util.is')
 local class = require('extern.middleclass')
 local copy_t = vim.tbl_deep_extend
 
@@ -97,7 +98,7 @@ end
 
 ---@private
 function Logger:write_file(level,msg)
-  local f = path.join(self.file.path, self.file.name)
+  local f = fs.join(self.file.path, self.file.name)
   local fp = io.open(f, "a")
   fp:write(msg)
   fp:close()

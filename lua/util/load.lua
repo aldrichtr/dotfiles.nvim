@@ -1,7 +1,8 @@
 --[[ A utility module for loading other modules ]]--
 
-local path = require('util.path')
-local is = require('util.is')
+local path = require('config.path')
+local fs   = require('util.fs')
+local is   = require('util.is')
 
 local load = {}
 
@@ -10,29 +11,37 @@ local load = {}
 ---@param root string Path to the directory to look for files in.
 ---@param ... any Optional arguments to pass to each module.
 ---@return table modules Table of required modules.
-function load.all(root, ...)
+function load.all(root, opts)
   if is.empty(root) then
     Logger:error("'root' must not be empty")
   end
   Logger:trace(string.format("Loading all lua files in '%s'", root))
-  local options = ...
-
-  local files = path.find({
+  local options = {}
+  local finder = {
     dir = root,
-    match = "(.+).lua$",
-    exclude = {"init.lua"}})
+    match = opts.match or "(.+).lua$",
+    exclude = opts.exclude or {"nit.lua"}
+  }
+
+  if is.present(opts.options) then
+    options = opts.options
+  end
+
+  local files = fs.find(finder)
 
   local results = {}
   local result
-  for _, file in ipairs(files) do
-    local mod = path.convert_to_module(file)
-    Logger:trace("loading module", mod)
-    if is.present(options) then
-      result = require(mod)(options)
-    else
-      result = require(mod)
+  if is.filled(files) then
+    for _, file in ipairs(files) do
+      local mod = path.convert_to_module(file)
+      Logger:trace("loading module", mod)
+      if is.present(options) then
+        result = require(mod)(options)
+      else
+        result = require(mod)
+      end
+      table.insert(results,result)
     end
-    table.insert(results,result)
   end
   return results
 end
@@ -106,11 +115,11 @@ end
 ---@return any|nil result The required module or nil on failure.
 function load.xtry(mod, handler, ...)
   if type(handler) ~= "function" then
-    error("❌ load.xtry: Expected a function as the second parameter")
+    error("load.xtry: Expected a function as the second parameter")
   end
 
   local args = {...}
-  Logger:trace("🔍 xpcall to require " .. mod .. (#args == 0 and " with no options" or " with options"))
+  Logger:trace("xpcall to require " .. mod .. (#args == 0 and " with no options" or " with options"))
 
   local called
   if #args == 0 then
@@ -122,10 +131,10 @@ function load.xtry(mod, handler, ...)
   local success, result = xpcall(called, handler)
 
   if success then
-    Logger:trace("✅ xpcall was successful")
+    Logger:trace("xpcall was successful")
     return result
   else
-    Logger:trace("❌ xpcall failed: " .. tostring(result))
+    Logger:trace("xpcall failed: " .. tostring(result))
     return nil, result
   end
 end
@@ -137,7 +146,7 @@ end
 ---@return any|nil result The required module or nil on failure.
 function load.safe(mod, ...)
   return load.xtry(mod, function(err)
-    Logger:error("❌ load.safe: Failed to load " .. mod .. ": " .. tostring(err))
+    Logger:error("load.safe: Failed to load %s: %s", mod, tostring(err))
     return nil
   end, ...)
 end

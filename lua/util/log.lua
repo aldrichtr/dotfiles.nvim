@@ -7,7 +7,8 @@
 -- under the terms of the MIT license. See LICENSE for details.
 
 -- User configuration section
-local path = require('util.path')
+local path = require('config.path')
+local fs      = require('util.fs')
 
 local default_config = {
   -- Name of the plugin. Prepended to log messages
