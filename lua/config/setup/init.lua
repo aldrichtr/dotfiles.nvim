@@ -1,7 +1,17 @@
 
-local M = {}
+local class  = require('extern.middleclass')
+local Config = require('config')
+local fs     = require('util.fs')
+local path   = require('config.path')
 
-function M.setup()
+local Setup = class('Setup', Config)
+
+
+function Setup:initialize()
+	Config.initialize(self)
+end
+
+function Setup:apply()
 	Logger:info("Setting up Editor elements")
   vim.o.fileformats = 'unix'
 
@@ -94,9 +104,9 @@ function M.setup()
   vim.opt.winblend = 8
   vim.opt.pumblend = 8
 
-  vim.opt.guifont = "AtkynsonMono\\ NF:h12"
+  vim.opt.guifont = "AtkynsonMono\\ NF:h11"
 
-  if vim.g.neovide then M.setup_neovide() end
+  if vim.g.neovide then self:setup_neovide() end
   -- !SECTION
 
   -- Windows keep this many lines above and below the cursor
@@ -109,13 +119,11 @@ function M.setup()
 
   -- !SECTION
 
-  require('config.setup.lsp').setup()
-  require('config.setup.keybindings').setup()
   require('config.setup.autocmds').setup()
 end
 
 ---Configuration for neovide, a "gui" for neovim
-function M.setup_neovide()
+function Setup:setup_neovide()
   -- g:neovide_transparency should be 0 if you want to unify transparency of
   -- content and title bar.
   vim.g.neovide_opacity = 0.95
@@ -156,4 +164,4 @@ function M.setup_neovide()
 end
 
 
-return M
+return Setup

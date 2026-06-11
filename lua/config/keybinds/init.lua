@@ -1,7 +1,5 @@
 -- Keybindings for neovim.  Requires whichkey.
 
-local path = require('config.path')
-local fs      = require('util.fs')
 -- #region which-key wk.Spec
 --[[
   - [1]: (string) lhs (required)
@@ -21,13 +19,20 @@ local fs      = require('util.fs')
 ]] --
 -- #endregion which-key wk.Spec
 
-local M = {}
+local class = require('extern.middleclass')
+local Config = require('config')
 
-function M.setup()
 
+local Keybindings = class('Keybindings', Config)
+
+function Keybindings:initialize()
+  Config.initialize(self)
+end
+
+
+
+function Keybindings:apply()
   local whichkey = require('which-key')
-  -- ----------------------------------------------------------------------------------------------------------------
-  -- Mappings start here
   whichkey.add({
     -- #region "Global" keys
     -- #region normal mode bindings
@@ -51,101 +56,6 @@ function M.setup()
       { '<C-S-v>', '"+p', desc = 'Paste from system clipboard' },
       -- #endregion General
 
-      -- #region <leader> Leader key operations
-      -- #region <leader> - Top level
-      -- #endregion <leader> - Top level
-      -- #region <leader>digit - Switching windows
-      -- #endregion <leader>digit - Switching windows
-
-      -- #region <leader><leader> - Harpoon
-
-      -- #endregion <leader><leader> - Harpoon
-
-      -- #region <leader>! - Todo comments
-      -- #endregion <leader>! - Todo comments
-
-      -- #region <leader>a - Unused
-      -- #endregion <leader>a - Unused
-
-      -- #region <leader>b - buffer operations
-      -- #region <leader>c - Unused
-      -- #endregion <leader>c - Unused
-
-      -- #region <leader>d - Unused
-      -- #endregion <leader>d - Unused
-
-      -- #region <leader>e - Unused
-      -- #endregion <leader>e - Unused
-
-      -- #region <leader>f - File operations
-      -- #endregion <leader>f - File operations
-
-      -- #region <leader>g - git commands (Neogit)
-      -- #endregion <leader>g - git commands (Neogit)
-
-      -- #region <leader>h - Unused
-      -- #endregion <leader>h - Unused
-
-      -- #region <leader>i - Unused
-      -- #endregion <leader>i - Unused
-
-      -- #region <leader>j - Unused
-      -- #endregion <leader>j - Unused
-
-      -- #region <leader>k - Unused
-      -- #endregion <leader>k - Unused
-
-      -- #region <leader>l - Unused
-      -- #endregion <leader>l - Unused
-
-      -- #region <leader>m - Unused
-      -- #endregion <leader>m - Unused
-
-      -- #region <leader>n - Unused
-      -- #endregion <leader>n - Unused
-
-      -- #region <leader>o - Unused
-      -- #endregion <leader>o - Unused
-
-      -- #region <leader>p - Unused
-      -- #endregion <leader>p - Unused
-
-      -- #region <leader>q - Unused
-      -- #endregion <leader>q - Unused
-
-      -- #region <leader>r - Unused
-      -- #endregion <leader>r - Unused
-
-      -- #region <leader>s - Search operations
-      -- #endregion <leader>s - Search operations
-
-      -- #region <leader>t - Tab operations
-      -- #endregion <leader>t - Tab operations
-
-      -- #region <leader>T - Terminal operations
-      -- #endregion <leader>T - Terminal operations
-      -- #region <leader>u - Unused
-      -- #endregion <leader>u - Unused
-
-      -- #region <leader>v - View application components
-      -- #endregion <leader>v - View application components
-
-      -- #region <leader>w - Window operations
-      -- #endregion <leader>w - Window operations
-
-      -- #region <leader>x - Diagnostics
-      -- #endregion <leader>x - Diagnostics
-
-      -- #region <leader>y - Unused
-      -- #endregion <leader>y - Unused
-
-      -- #region <leader>z - Unused
-      -- #endregion <leader>z - Unused
-
-      -- #endregion <leader> Leader key operations
-
-      -- #region z - Fold commands
-      -- #endregion z - Fold commands
     }, -- #endregion normal mode bindings
 
     -- #region visual mode bindings
@@ -180,4 +90,4 @@ end
 -- ----------------------------------------------------------------------------------------------------------------
 -- #endregion Setup new keymaps (with which-key)
 
-return M
+return Keybindings

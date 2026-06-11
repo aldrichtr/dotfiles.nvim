@@ -3,7 +3,7 @@ local ls = require('luasnip')
 local s  = ls.snippet
 
 
-M = {
+local M = {
   s({ trig = ",section", snippetType="autosnippet", desc = "Section comment markers"},
     fmta(
       [[

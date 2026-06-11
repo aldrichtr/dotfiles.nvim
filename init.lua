@@ -1,13 +1,29 @@
+
+local options = {
+  level = os.getenv("NVIM_LOG_LEVEL") or "WARN",
+  format = "[!d<%y.%m.%d>]!LL: (!p:!n) !m"
+}
+-- TODO: Use `vim.json` to read in options if file exists
+
 local logger = require('util.logger')
 
-_G.Logger = logger:new({
-  level = os.getenv("NVIM_LOG_LEVEL") or "WARN",
-  format = "[!d<%y.%m.%d>]!LL: (!p:!n) !m",
-})
-Logger:debug("- Beginning neovim initialization script" .. string.rep("-", 40))
+_G.Logger = logger:new()
+
+Logger:set(options)
+
+Logger:info("- Beginning neovim initialization script" .. string.rep("-", 40))
 
 local config = require('config')
 
-config.setup()
+local Config = config:new()
 
-Logger:debug("Initialization complete" .. string.rep("-", 40))
+Config.stages = {
+	'before',
+	'lazy', 'lsp',
+	'setup', 'keybinds',
+	'after'
+}
+
+Config:apply()
+
+Logger:info("Initialization complete" .. string.rep("-", 40))

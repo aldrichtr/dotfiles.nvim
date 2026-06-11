@@ -1,26 +1,42 @@
---[[ A utility module for loading other modules ]]--
+-- util.load : A utility module for loading other modules
+
+---@class FinderOptions
+---@field match string A lua glob pattern for matching files
+---@field exlude array A list of
 
 local path = require('config.path')
 local fs   = require('util.fs')
 local is   = require('util.is')
 
-local load = {}
+local Load = {}
+setmetatable( Load , {
+  __index = Load,
+  __call  = function(cls, ...) return cls.new(cls, ...) end
+})
+
+function Load:new()
+  local instance = setmetatable({}, Load)
+  instance.name = 'config.keybinds'
+  
+  return instance
+end
 
 --- Require all files in the given path.
 --- If arguments are provided, they will be passed to each module as a function call.
----@param root string Path to the directory to look for files in.
----@param ... any Optional arguments to pass to each module.
+---@param dir string Path to the directory to look for files in.
+---@param opts any Optional arguments to pass to each module.
 ---@return table modules Table of required modules.
-function load.all(root, opts)
-  if is.empty(root) then
-    Logger:error("'root' must not be empty")
+function Load:all(dir, opts)
+  if is.empty(dir) then
+    Logger:error("'dir' must not be empty")
   end
-  Logger:trace(string.format("Loading all lua files in '%s'", root))
+  Logger:trace(string.format("Loading all lua files in '%s'", dir))
   local options = {}
   local finder = {
-    dir = root,
+    dir = dir,
     match = opts.match or "(.+).lua$",
-    exclude = opts.exclude or {"nit.lua"}
+    exclude = opts.exclude or {"init.lua$"},
+
   }
 
   if is.present(opts.options) then
@@ -90,7 +106,7 @@ end
 ---@param ... any Optional arguments to pass to the module.
 ---@return any|nil result The required module or nil on failure.
 ---@return string|nil err Error message if failure occurred.
-function load.try(mod, ...)
+function Load:try(mod, ...)
   local args = {...}
 
   local success, result
@@ -113,7 +129,7 @@ end
 ---@param handler fun(err: string): any Custom error handler function.
 ---@param ... any Optional arguments to pass to the module.
 ---@return any|nil result The required module or nil on failure.
-function load.xtry(mod, handler, ...)
+function Load:xtry(mod, handler, ...)
   if type(handler) ~= "function" then
     error("load.xtry: Expected a function as the second parameter")
   end
@@ -144,11 +160,11 @@ end
 ---@param mod string Dot-separated path to module.
 ---@param ... any Optional arguments to pass to the module.
 ---@return any|nil result The required module or nil on failure.
-function load.safe(mod, ...)
-  return load.xtry(mod, function(err)
+function Load:safe(mod, ...)
+  return self:xtry(mod, function(err)
     Logger:error("load.safe: Failed to load %s: %s", mod, tostring(err))
     return nil
   end, ...)
 end
 
-return load
+return Load

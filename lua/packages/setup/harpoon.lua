@@ -18,7 +18,7 @@ M.opt = {
 
 M.config = function()
   local harpoon = require('harpoon')
-  local harpoon_extensions = require('harpoon.extensions')
+  local ext = require('harpoon.extensions')
 
   -- Add keys to the harpoon ui
   harpoon:extend({
@@ -37,7 +37,7 @@ M.config = function()
     end,
   })
 
-  harpoon:extend(harpoon_extensions.builtins.highlight_current_file())
+  harpoon:extend(ext.builtins.highlight_current_file())
 end
 
 M.keys = function()
@@ -57,8 +57,7 @@ M.keys = function()
     { '<leader><leader>7', function() list:select(7) end, desc = 'Jump to harpoon file 7' },
     { '<leader><leader>8', function() list:select(8) end, desc = 'Jump to harpoon file 8' },
     { '<leader><leader>9', function() list:select(9) end, desc = 'Jump to harpoon file 9' },
-    {
-      '<leader><leader>a', function() list:add() end, desc = 'Add this file to the harpoon list', },
+    { '<leader><leader>a', function() list:add() end, desc = 'Add this file to the harpoon list', },
     { '<leader><leader>n', function() list:next() end, desc = 'Jump to next mark' },
     { '<leader><leader>p', function() list:prev() end, desc = 'Jump to previous mark' },
     { '<leader><leader>m', function() harpoon.ui:toggle_quick_menu(list) end, desc = 'Show the harpoon quick menu', }

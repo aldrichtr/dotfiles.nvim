@@ -2,53 +2,61 @@
 local is = require('util.is')
 
 local luaDir = vim.fn.stdpath('config') .. '/lua'
+local NeovimFs = vim.fs
 
-local fs = {}
+
+local FileSystem = {}
 
 -- SECTION Path components
--- fix some non-standard naming in the vim.fs object
+
+-- fix some non-standard naming in the `vim.fs` object
+
 ---@param path string a filesystem path
 ---@return string The filename (without the directory) of path
-fs.filename = function(path)
-  return vim.fs.basename(path)
+function FileSystem.filename(path)
+  return NeovimFs.basename(path)
 end
 
 ---@param path string a filesystem path
 ---@return string the fullname of the parent directory of path
-fs.parent = function(path)
-  return vim.fs.dirname(path)
+function FileSystem.parent(path)
+  return NeovimFs.dirname(path)
 end
-fs.directory = fs.parent
+
+-- alias directory to parent
+FileSystem.directory = FileSystem.parent
 
 ---@param path string a filesystem path
 ---@return string The file extension
-fs.extension = function(path)
-  return vim.fs.ext(path)
+function FileSystem.extension(path)
+  return NeovimFs.ext(path)
 end
 
 ---@param path string a filesystem path
 ---@return string The name of the directory path is in
-fs.directoryname = function(p)
-  local path = vim.fs.dirname
-  return vim.fs.basename(path)
+function FileSystem.directoryname(path)
+  local p = NeovimFs.dirname(path)
+  return NeovimFs.basename(p)
 end
 
 
 ---@param path string a filepath
 ---@return string The name of the file without its extension
-fs.basename = function(path)
-  local file = fs.filename(path)
-  local ext  = fs.extension(path)
-  return file:gsub(ext,'')
+function FileSystem.basename(path)
+  local file = FileSystem.filename(path)
+  local ext  = FileSystem.extension(path)
+  local s, _ = file:gsub(ext,'')
+  return s
 end
 
 -- !SECTION
 
 -- SECTION Path testing functions
----@param p string potential path to a directory or file
+---@public
+---@param path string potential path to a directory or file
 ---@return boolean true if the directory or file is present on the system
-function fs.exists(p)
-  if vim.uv.fs_stat(p) then
+function FileSystem.exists(path)
+  if vim.uv.fs_stat(path) then
     return true
   else
     return false
@@ -58,42 +66,43 @@ end
 
 -- SECTION Path manipulation functions
 
----@param ... string[] A list of path components to be joined
+---@public
+---@param ... string|string[] A list of path components to be joined
 ---@return string A normalized path
-fs.join = function(...)
-  local path = vim.fs.joinpath(...)
-  return fs.normalize(path)
+function FileSystem.join(...)
+  local path = NeovimFs.joinpath(...)
+  return FileSystem.normalize(path)
 end
 
----@param
-function fs.normalize(path)
+---@param path string A (possibly) non-standard path specification
+---@return string A fully-qualified, expanded path
+function FileSystem.normalize(path)
   local result
-  result = vim.fs.normalize(path)
-  return vim.fs.abspath(result)
+  result = NeovimFs.normalize(path)
+  return NeovimFs.abspath(result)
 end
 
+-- !SECTION
 
+-- SECTION Path conversion functions
 
 --- Convert a file path to a module specific, such as:
 --- ~/.config/nvim/lua/config/foo.lua => 'config.foo'
 ---@param file string fully-qualified path to a lua file
 ---@return string "dot-separated" path to file
-function fs.convert_to_module(file)
+function FileSystem.convert_to_module(file)
   local filename, relpath, modpath
   local root = luaDir
-  Logger:trace("converting file '" .. file .. "' to module")
-  filename = fs.normalize(file)
+  filename = FileSystem.normalize(file)
 
-  if vim.fs.basename(filename):match("^init") then
-    filename = vim.fs.dirname(filename)
+  if NeovimFs.basename(filename):match("^init") then
+    filename = NeovimFs.dirname(filename)
   else
-    filename = filename:gsub("%.lua", "")
+    filename, _ = filename:gsub("%.lua", "")
   end
-  Logger:trace("Getting relative path for '" .. filename .. "' from '" .. root .. "'")
-  relpath = vim.fs.relpath(root, filename)
+  relpath = NeovimFs.relpath(root, filename)
   if is.present(relpath) then
-    Logger:trace("Now creating module name from '" .. relpath .. "'")
-    modpath = relpath:gsub("/", ".")
+    modpath, _ = relpath:gsub("/", ".")
     return modpath
   else
     error("attempt to convert non-init path '" .. file .. "'", 1)
@@ -102,48 +111,102 @@ end
 
 --- Convert a module specification to a file path, such as:
 --- 'config.foo' => ~/.config/nvim/lua/config/foo.lua
-function fs.convert_to_path(mod)
-  local file = mod:gsub("%.","/")
-  file = fs.join(luaDir, file)
+function FileSystem.convert_to_path(mod)
+  local file,_ = mod:gsub("%.","/")
   file = file .. '.lua'
-  return fs.join(luaDir, file)
+  return FileSystem.join(luaDir, file)
 end
 
+-- !SECTION
 
----@param count integer  the number of callers back from the
----caller of this function.  0 or nil is the calling function,
----1 would be the caller of the caller, etc.
----@return string Path to the callers file
-function fs.caller(count)
-  local jumps = 0
-  if count == nil then
-    jumps = 2 -- the function that called fs.caller()
-  else
-    jumps = count + 2 -- one for fs.caller() and one for caller
+
+---@private
+--- This function is used by the find() function to determine if the given file
+--- and path meet the qualifiers.
+--- @param name string the name of the file
+--- @param path string The path the file is in
+--- @param matches string[] List of 0 or more regex to apply to the `name`
+--- @param excludes string[] List of 0 or more regex to apply to name and path
+local function matcher(name, path, matches, excludes)
+  local name_matches = false
+  local name_excluded = false
+  local path_excluded = false
+
+  for _, match in ipairs(matches) do
+    if name:match(match) then
+      Logger:trace("'%s' matches '%s'", name, match)
+      name_matches = true
+      break
+    end
   end
-  local caller = debug.getinfo(jumps,'S')
-  return normalize(caller.source:sub(2))
+
+  for _, exclude in ipairs(excludes) do
+    if name:match(exclude) then
+      Logger:trace("'%s' excluded by '%s'", name, exclude)
+      name_excluded = true
+      break
+    end
+    if path:match(exclude) then
+      Logger:trace("'%s' excluded by '%s'", path, exclude)
+      path_excluded = true
+      break
+    end
+  end
+
+  if name_matches then
+    if name_excluded or path_excluded then
+      return false
+    else
+      return true
+    end
+  else
+    return false
+  end
 end
 
----@param dir string The root directory to find files in
----@param match string A pattern to apply to file names for inclusion
----@param exclude table A list of file names to exclude
----@param details table Details to pass to the vim find cmd. limit and type
-function fs.find(...)
-  local params = ...
-  local directory, match, exclude, details, files
+
+---@alias findType string
+---| '"file"' # Find files
+---| '"directory"' # Find directories
+---| '"link"' # Find links
+---| '"socket"' # Find sockets
+---| '"char"' # Find characters
+---| '"block"' # Find blocks
+---| '"fifo"' # Find fifo queues
+
+---@class FinderOptions
+---@field root? string The root to start the find operation in. If omitted, use
+--- the caller's directory as the root.
+---@field match? string A list of patterns to apply to object names for inclusion. If
+--- ommited, use `{'(.+).lua$'}`
+---@field exclude? table A list of object names to exclude.
+---@field type? findType The type of object to find.  If ommited, use `'file'`
+---@field limit? number The upper limit of objects to find.  If ommitted use
+--- `math.huge`
+
+---@public
+---@param params FinderOptions Options used to find objects
+---@return table|nil Return a list of found objects or nil
+function FileSystem.find(params)
+  local directory, match, exclude, files, limit, type
 
   if is.a_string(params) then
     directory = params
-  elseif is.a_table(params) then
-    directory = params.dir or params[0] or nil
-    match     = params.match or params[1] or nil
-    exclude   = params.exclude or params[2] or nil
-    details   = params.details or params[3] or nil
-  else
-    directory, match, exclude, details = ...
+  elseif is.a_array(params) then
+    directory = params[1] or nil
+    match     = params[2] or nil
+    exclude   = params[3] or nil
+    type      = params[4] or nil
+    limit     = params[5] or nil
+  elseif is.a_dictionary(params) then
+    directory = params.dir or nil
+    match     = params.match or nil
+    exclude   = params.exclude or nil
+    type      = params.type or nil
+    limit     = params.limit or nil
   end
 
+  -- just for debugging purposes
   if is.a_table(params) then
     for k,v in pairs(params) do
       Logger:trace(string.format("Parameter '%s' => '%s'", k, v))
@@ -154,53 +217,32 @@ function fs.find(...)
   -- 1. directory -----------------------------------------------------------
   -- use the callers directory if not given
   if is.empty(directory) then
-    info = debug.getinfo(2, 'S')
-    directory = vim.fs.dirname(info.short_src)
-  end
-  -- the info in debug.getinfo has two paths:
-  -- - `source` which has an '@' sign before it
-  -- - `short_src` which does not
-
-  -- if it does, remove it
-  if string.sub(directory, 1, 1) == "@" then
-    directory = string.sub(directory, 2)
+    local info = debug.getinfo(2, 'S')
+    directory = NeovimFs.dirname(info.short_src)
   end
   -- 2. match --------------------------------------------------------------
-  if is.empty(match) then
-    match = "(.+).lua$"
-  end
+  if is.empty(match) then match = { "(.+).lua$" } end
   -- 3. exclude ------------------------------------------------------------
-  if is.empty(exclude) then
-    exclude = {}
-  end
+  if is.empty(exclude) then exclude = {} end
   -- 4. details ------------------------------------------------------------
+  -- 4.a limit
+  if is.empty(limit) then limit = math.huge end
 
-  if is.empty(details) then
-    details = {limit = math.huge, type = 'file', path = directory}
-  elseif is.a_table(details) then
-    if is.empty(details['limit']) then
-      details['limit'] = math.huge
-    end
-    if is.empty(details['type']) then
-      details['type'] = 'file'
-    end
-    if is.empty(details['path']) then
-      details['path'] = directory
-    end
-  else
-    details = {limit = math.huge, type = 'file', path = directory}
-  end
+  -- 4.b type
+  if is.empty(type) then type = 'file' end
+
   -- -----------------------------------------------------------------------
+  -- finally: call vim.fs.find
 
-  Logger:trace(string.format("Finding files in '%s' that match '%s'", details.path, match))
-  files = vim.fs.find(
-    function(name, path)
-      return name:match(match) and not exclude[name]
-    end , details)
+  Logger:trace(string.format("Finding %s in '%s' that match '%s'", type, directory, match))
+
+  files = NeovimFs.find(
+    function(name, path) matcher(name, path, match, exclude) end,
+    { type = type, limit = limit, path = directory })
 
   Logger:trace("- found " .. table.concat(files, ", "))
   return files
 end
 
 
-return fs
+return FileSystem
