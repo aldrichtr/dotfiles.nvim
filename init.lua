@@ -1,7 +1,8 @@
 
 local options = {
   level = os.getenv("NVIM_LOG_LEVEL") or "WARN",
-  format = "[!d<%y.%m.%d>]!LL: (!p:!n) !m"
+  format = "[!d<%y.%m.%d>]!LL: (!p:!n) !m",
+	file = { enabled = true }
 }
 -- TODO: Use `vim.json` to read in options if file exists
 

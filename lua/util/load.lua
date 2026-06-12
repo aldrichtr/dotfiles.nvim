@@ -103,18 +103,12 @@ end
 --- Attempt to require a module with error handling.
 --- If arguments are provided, they will be passed to the module as a function call.
 ---@param mod string Dot-separated path to module.
----@param ... any Optional arguments to pass to the module.
 ---@return any|nil result The required module or nil on failure.
 ---@return string|nil err Error message if failure occurred.
-function Load:try(mod, ...)
-  local args = {...}
-
+function Load:try(mod)
   local success, result
-  if #args == 0 then
-    success, result = pcall(require, mod)
-  else
-    success, result = pcall(function() return require(mod)(table.unpack(args)) end)
-  end
+	Logger:trace('Attempting to call require with %s', mod)
+	success, result = pcall(require, mod)
 
   if success then
     return result

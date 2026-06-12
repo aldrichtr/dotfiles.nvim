@@ -26,7 +26,7 @@ function Config:is_module(name)
   local fname = string.format('%s.lua', name)
 	local iname = string.format('%s/init.lua', name)
   local path
-	-- 
+	--
 	path = fs.join(self.paths.config, fname)
 	Logger:debug('Testing if %s exists', path)
 	if fs.exists(path) then return true end
@@ -38,53 +38,59 @@ end
 
 ---@public
 --- Apply the given `Config`
----@param spec string  
+---@param spec string
 function Config:apply(opts)
   Logger:info('Configuration setup initialized')
   for _, stage in ipairs(self.stages) do
-    local mod, Stage, err
     Logger:debug('Checking if %s is a module', stage)
     if self:is_module(stage) then
       Logger:debug('%s is a module.  Looking for apply function', stage)
-			mod = require('config.' .. stage)
-		  Stage = mod:new()
-			Stage:apply()
-    else -- is mod present
+			self:load('config.' .. stage)
+    else 
       Logger:debug('%s is not a module.  Looking for files', stage)
 			self:load_each(stage)
     end
   end -- for each stage
 end
 
+---@private 
+function Config:load(spec)
+	local mod, Stage, err
+  Logger:debug('Attempting to load %s', spec)
+	mod,err = load:try(spec)
+	if not mod then
+		Logger:error('Failed to load %s. %s', spec, err)
+	else
+		if type(mod['new']) == "function" then
+			Stage = mod:new()
+			if type(Stage['apply']) == "function" then
+				Stage:apply()
+			end
+		end
+	end
+end
 
+
+---@protected
+--- Load and apply each file in a given directory
+---@param name string The name of the stage to load
+---@return nil
 function Config:load_each(name)
 	local finder = {
-		root    = fs.join(self.paths.config, stage),
-		match   = { '(.+).lua$' },
-		exclude = { 'init.lua$' }, -- shouldn't have to, but just incase
-		type    = 'file'
+		dir      = fs.join(self.paths.config, name),
+		matches  = { '(.+).lua$' },
+		excludes = { 'init.lua$' }, -- shouldn't have to, but just incase
+		type     = 'file'
 	}
 	local files = fs.find(finder)
 	if is.filled(files) then
 		Logger:debug(' - found files. Loading now')
 		for _, file in ipairs(files) do
 			local p = fs.convert_to_module(file)
-			Logger:debug('Attempting to load %s', p)
-			local mod, File, err
-			mod = load:try(fs.convert_to_module(file))
-			if is.present(mod) then
-				Logger:debug('%s is a module.  Looking for apply function', p)
-				File = mod:new()
-				if type(File['apply']) == 'function' then
-					Logger:debug('- found apply.  Calling now')
-					File:apply()
-				end -- has setup
-			else -- no mod present
-				Logger:error('Could not load configuration stage %s %s', p, err)
-			end -- is mod present
+			self:load(p)
 		end -- for each file
 	else -- nothing in files
-		Logger:warn('%s contained no valid files to load', stage)
+		Logger:warn('%s contained no valid files to load', p)
 	end -- is there files
 
 end

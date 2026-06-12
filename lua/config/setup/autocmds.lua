@@ -2,6 +2,7 @@
 local cmd = vim.api.nvim_create_autocmd -- (event, opts)
 local set  = vim.keymap.set -- (mode, lhs, rhs, opts)
 
+
 local M = {}
 
 function M.setup()
