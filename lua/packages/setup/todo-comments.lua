@@ -22,7 +22,7 @@ M.opts = {
     fg = 'BOLD',         -- The gui style to use for the fg highlight group.
     bg = 'NONE',         -- The gui style to use for the bg highlight group.
   },
-  merge_keywords = true, -- when true, custom keywords will be merged with the defaults
+  merge_keywords = false, -- when true, custom keywords will be merged with the defaults
 
   -- highlighting of the line containing the todo comment
   -- * before: highlights before the keyword (typically comment characters)
@@ -64,6 +64,11 @@ M.opts = {
     -- regex that will be used to match keywords.
     pattern = [[\b(KEYWORDS):]], -- ripgrep regex
   }
+}
+
+M.keys = {
+  { '<leader>!n', function() require('todo-comments').jump_next() end, desc = 'Next todo comment' },
+  { '<leader>!p', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' }
 }
 
 return M

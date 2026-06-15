@@ -76,4 +76,3 @@ Packages are organized in folders, which are loaded in the folowing order:
 - themes
 - setup
 - after
-

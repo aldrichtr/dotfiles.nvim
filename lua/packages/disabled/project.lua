@@ -50,7 +50,7 @@ M.config = function()
     scope_chdir = 'tab',
   })
 
-  require('telescope').load_extension('projects')
+  require('lua.profile.default.packages.disabled.telescope').load_extension('projects')
 end
 
 return M

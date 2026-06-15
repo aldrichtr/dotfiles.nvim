@@ -1,0 +1,371 @@
+
+
+noautochdir
+noautocomplete
+  autocompletedelay=0
+  autocompletetimeout=80
+  autoindent
+  autoread
+noautowrite
+noautowriteall
+  background=dark
+  backspace=indent,eol,start
+nobackup
+  backupcopy=auto
+  backupdir=.,~\AppData\Local\nvim-data\backup\\
+  backupext=~
+  backupskip=C:\Users\ALDRIC~1\CACHE~1\*
+  belloff=all
+nobinary
+nobomb
+  breakat= ^I!@*-+;:,./?
+nobreakindent
+  breakindentopt=
+  browsedir=
+  bufhidden=
+  buflisted
+  buftype=
+  busy=0
+  casemap=internal,keepascii
+nocdhome
+  cdpath=,,
+  cedit=^F
+  channel=0
+  charconvert=
+  chistory=10
+nocindent
+  cinkeys=0{,0},0),0],:,0#,!^F,o,O,e
+  cinoptions=
+  cinscopedecls=public,protected,private
+  cinwords=if,else,while,do,for,switch
+  clipboard=
+  cmdheight=2
+  cmdwinheight=7
+  colorcolumn=
+  columns=227
+  comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-,fb:•
+  commentstring=
+nocompatible
+  complete=.,w,b,u,t
+  completefunc=
+  completeitemalign=abbr,kind,menu
+  completeopt=menu,menuone
+  completeslash=
+  completetimeout=0
+  concealcursor=
+  conceallevel=0
+noconfirm
+nocopyindent
+  cpoptions=aABceFs_
+nocursorbind
+nocursorcolumn
+  cursorline
+  cursorlineopt=number,line
+  debug=
+  define=
+nodelcombine
+  dictionary=
+nodiff
+  diffanchors=
+  diffexpr=
+  diffopt=internal,filler,closeoff,indent-heuristic,inline:char,linematch:40
+nodigraph
+  directory=~\AppData\Local\nvim-data\swap\\
+  display=lastline
+  eadirection=both
+noedcompatible
+  emoji
+  encoding=utf-8
+noendoffile
+  endofline
+  equalalways
+  equalprg=
+noerrorbells
+  errorfile=errors.err
+  errorformat=%f(%l): %t%*\D%n: %m,%f(%l\,%c): %t%*\D%n: %m,%f(%l) \=: %t%*\D%n: %m,%*[^"]"%f"%*\D%l: %m,%f(%l) \=: %m,%*[^ ] %f %l: %m,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,%f|%l| %m
+  eventignore=
+  eventignorewin=
+  expandtab
+noexrc
+  fileencoding=
+  fileencodings=ucs-bom,utf-8,default,latin1
+  fileformat=unix
+  fileformats=unix
+  fileignorecase
+  filetype=
+  fillchars=eob: ,fold: ,foldopen:,foldsep: ,foldclose:
+  findfunc=
+  fixendofline
+  foldclose=
+  foldcolumn=1
+  foldenable
+  foldexpr=0
+  foldignore=#
+  foldlevel=99
+  foldlevelstart=99
+  foldmarker=SECTION,!SECTION
+  foldmethod=marker
+  foldminlines=1
+  foldnestmax=20
+  foldopen=block,hor,mark,percent,quickfix,search,tag,undo
+  foldtext=v:lua.require'ufo.main'.foldtext()
+  formatexpr=
+  formatlistpat=^\s*\d\+[\]:.)}\t ]\s*
+  formatoptions=rjqocl
+  formatprg=
+  fsync
+nogdefault
+  grepformat=%f:%l:%c:%m
+  grepprg=rg --vimgrep -uu
+  guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:block-blinkon500-blinkoff500-TermCursor
+  guifont=Lilex\ Nerd\ Font,h:10
+  guifontwide=
+  guioptions=
+  guitablabel=
+  guitabtooltip=
+  helpfile=C:\Program Files\Neovim\share/nvim/runtime/doc/help.txt
+  helpheight=20
+  helplang=en
+  hidden
+  highlight=8:SpecialKey,~:EndOfBuffer,z:TermCursor,@:NonText,d:Directory,e:ErrorMsg,i:IncSearch,l:Search,y:CurSearch,m:MoreMsg,M:ModeMsg,n:LineNr,a:LineNrAbove,b:LineNrBelow,N:CursorLineNr,G:CursorLineSign,O:CursorLineFold,r:Question,s:StatusLine,S:StatusLineNC,c:VertSplit,t:Title,v:Visual,V:VisualNOS,w:WarningMsg,W:WildMenu,f:Folded,F:FoldColumn,A:DiffAdd,C:DiffChange,D:DiffDelete,T:DiffText,E:DiffTextAdd,>:SignColumn,-:Conceal,B:SpellBad,P:SpellCap,R:SpellRare,L:SpellLocal,+:Pmenu,=:PmenuSel,k:PmenuMatch,<:PmenuMatchSel,[:PmenuKind,]:PmenuKindSel,{:PmenuExtra,}:PmenuExtraSel,x:PmenuSbar,X:PmenuThumb,*:TabLine,#:TabLineSel,_:TabLineFill,!:CursorColumn,.:CursorLine,o:ColorColumn,q:QuickFixLine,z:StatusLineTerm,Z:StatusLineTermNC,g:MsgArea,h:ComplMatchIns,0:Whitespace,I:PreInsert
+  history=10000
+nohkmap
+nohkmapp
+  hlsearch
+noicon
+  iconstring=
+  ignorecase
+noimcmdline
+noimdisable
+  iminsert=0
+  imsearch=-1
+  inccommand=nosplit
+  include=
+  includeexpr=
+  incsearch
+  indentexpr=
+  indentkeys=0{,0},0),0],:,0#,!^F,o,O,e
+noinfercase
+noinsertmode
+  isfname=@,48-57,/,\,.,-,_,+,,,#,$,%,{,},[,],@-@,!,~,=
+  isident=@,48-57,_,128-167,224-235
+  iskeyword=@,48-57,_,192-255
+  isprint=@,161-255
+nojoinspaces
+  jumpoptions=clean
+  keymap=
+  keymodel=
+  keywordprg=:help!
+  langmap=
+  langmenu=
+  langnoremap
+nolangremap
+  laststatus=3
+nolazyredraw
+  lhistory=10
+nolinebreak
+  lines=54
+  linespace=0
+nolisp
+  lispoptions=
+  lispwords=defun,define,defmacro,set!,lambda,if,case,let,flet,let*,letrec,do,do*,define-syntax,let-syntax,letrec-syntax,destructuring-bind,defpackage,defparameter,defstruct,deftype,defvar,do-all-symbols,do-external-symbols,do-symbols,dolist,dotimes,ecase,etypecase,eval-when,labels,macrolet,multiple-value-bind,multiple-value-call,multiple-value-prog1,multiple-value-setq,prog1,progv,typecase,unless,unwind-protect,when,with-input-from-string,with-open-file,with-open-stream,with-output-to-string,with-package-iterator,define-condition,handler-bind,handler-case,restart-bind,restart-case,with-simple-restart,store-value,use-value,muffle-warning,abort,continue,with-slots,with-slots*,with-accessors,with-accessors*,defclass,defmethod,print-unreadable-object
+  list
+  listchars=tab:>-,trail:·
+noloadplugins
+  magic
+  makeef=
+  makeencoding=
+  makeprg=make
+  matchpairs=(:),{:},[:]
+  matchtime=5
+  maxcombine=6
+  maxfuncdepth=100
+  maxmapdepth=1000
+  maxmempattern=1000
+  maxsearchcount=999
+  menuitems=25
+  messagesopt=hit-enter,history:500,progress:c
+  mkspellmem=460000,2000,500
+  modeline
+nomodelineexpr
+  modelines=2
+  modifiable
+nomodified
+  more
+  mouse=nvi
+nomousefocus
+  mousehide
+  mousemodel=popup_setpos
+nomousemoveevent
+  mousescroll=ver:3,hor:6
+  mouseshape=
+  mousetime=500
+  nrformats=bin,hex
+  number
+  numberwidth=4
+  omnifunc=
+noopendevice
+  operatorfunc=
+  packpath=C:\Program Files\Neovim\share/nvim/runtime
+  paragraphs=IPLPPPQPP TPHPLIPpLpItpplpipbp
+nopaste
+  pastetoggle=
+  patchexpr=
+  patchmode=
+  path=.,,
+nopreserveindent
+  previewheight=12
+nopreviewwindow
+  prompt
+  pumblend=8
+  pumborder=
+  pumheight=0
+  pummaxwidth=0
+  pumwidth=15
+  pyxversion=3
+  quickfixtextfunc=
+  quoteescape=\
+noreadonly
+  redrawdebug=
+  redrawtime=2000
+  regexpengine=0
+  relativenumber
+  remap
+  report=2
+norevins
+norightleft
+  rightleftcmd=search
+  ruler
+  rulerformat=
+  runtimepath=~\AppData\Local\tree-sitter,~\AppData\Roaming\nvim,~\.local\share\nvim-data\lazy\lazy.nvim,~/.local/share/nvim-data/lazy/conform.nvim,~\.local\share\nvim-data\lazy\promise-async,~\.local\share\nvim-data\lazy\nvim-ufo,~\.local\share\nvim-data\lazy\rainbow-delimiters.nvim,~\.local\share\nvim-data\lazy\nvim-treesitter-textobjects,~\.local\share\nvim-data\lazy\nvim-surround,~\.local\share\nvim-data\lazy\tabout.nvim,~\.local\share\nvim-data\lazy\no-clown-fiesta.nvim,~\.local\share\nvim-data\lazy\lualine.nvim,~\.local\share\nvim-data\lazy\todo-comments.nvim,~\.local\share\nvim-data\lazy\blink.cmp,~\.local\share\nvim-data\lazy\darcula,~\.local\share\nvim-data\lazy\which-key.nvim,~\.local\share\nvim-data\lazy\lualine-lsp-progress,~\.local\share\nvim-data\lazy\plenary.nvim,~\.local\share\nvim-data\lazy\harpoon,~\.local\share\nvim-data\lazy\nvim-web-devicons,~\.local\share\nvim-data\lazy\bufferline.nvim,~\.local\share\nvim-data\lazy\grail,~\.local\share\nvim-data\lazy\rose-pine,~\.local\share\nvim-data\lazy\LuaSnip,~\.local\share\nvim-data\lazy\melange,~\.local\share\nvim-data\lazy\image.nvim,~\.local\share\nvim-data\lazy\vim-repeat,~\.local\share\nvim-data\lazy\snacks.nvim,~\.local\share\nvim-data\lazy\lspkind.nvim,~\.local\share\nvim-data\lazy\open-link.nvim,C:\Program Files\Neovim\share\nvim\runtime,C:\Program Files\Neovim\share\nvim\runtime\pack\dist\opt\netrw,C:\Program Files\Neovim\share\nvim\runtime\pack\dist\opt\matchit,C:\Program Files\Neovim\lib\nvim,~\AppData\Roaming\nvim\after,~\AppData\Local\nvim-data\lazy\readme
+  scroll=24
+  scrollback=-1
+noscrollbind
+  scrolljump=1
+  scrolloff=5
+  scrollopt=ver,jump
+  sections=SHNHH HUnhsh
+nosecure
+  selection=inclusive
+  selectmode=
+  sessionoptions=blank,buffers,curdir,folds,help,tabpages,winsize,terminal
+  shada=!,'100,<50,s10,h,r/tmp/,r/private/
+  shadafile=
+  shell=cmd.exe
+  shellcmdflag=/s /c
+  shellpipe=2>&1| tee
+  shellquote=
+  shellredir=>%s 2>&1
+noshellslash
+noshelltemp
+  shellxescape=
+  shellxquote="
+noshiftround
+  shiftwidth=2
+  shortmess=ltToOCF
+  showbreak=
+  showcmd
+  showcmdloc=tabline
+noshowfulltag
+noshowmatch
+  showmode
+  showtabline=2
+  sidescroll=1
+  sidescrolloff=0
+  signcolumn=auto
+  smartcase
+nosmartindent
+  smarttab
+nosmoothscroll
+  softtabstop=2
+nospell
+  spellcapcheck=[.?!]\_[\])'"\t ]\+
+  spellfile=
+  spelllang=en
+  spelloptions=
+  spellsuggest=best
+  splitbelow
+  splitkeep=cursor
+  splitright
+nostartofline
+  statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
+  statusline=%#lualine_a_command# COMMAND %#lualine_transitional_lualine_a_command_to_lualine_b_command#%#lualine_b_command#  feat/no-profile %#lualine_transitional_lualine_b_command_to_lualine_c_command#%<%#lualine_c_command#%=%#lualine_c_command# Thursday - 04 June 19:26 %#lualine_transitional_lualine_b_command_to_lualine_c_command#%#lualine_b_command# Top %#lualine_transitional_lualine_a_command_to_lualine_b_command#%#lualine_a_command#   1:1
+  suffixes=.bak,~,.o,.h,.info,.swp,.obj
+  suffixesadd=
+  swapfile
+  switchbuf=uselast
+  synmaxcol=3000
+  syntax=
+  tabclose=
+  tabline=%!v:lua.nvim_bufferline()
+  tabpagemax=50
+  tabstop=2
+  tagbsearch
+  tagcase=followic
+  tagfunc=
+  taglength=0
+  tagrelative
+  tags=./tags;,tags
+  tagstack
+notermbidi
+  termencoding=
+  termguicolors
+  termpastefilter=BS,HT,ESC,DEL
+  termsync
+noterse
+  textwidth=80
+  thesaurus=
+  thesaurusfunc=
+notildeop
+  timeout
+  timeoutlen=1000
+  title
+  titlelen=85
+  titleold=
+  titlestring=%F
+  ttimeout
+  ttimeoutlen=50
+  ttyfast
+  undodir=~\AppData\Local\nvim-data\undo\\
+noundofile
+  undolevels=1000
+  undoreload=10000
+  updatecount=200
+  updatetime=4000
+  varsofttabstop=
+  vartabstop=
+  verbose=0
+  verbosefile=
+  viewdir=~\AppData\Local\nvim-data\view\\
+  viewoptions=folds,cursor,curdir
+  virtualedit=
+  visualbell
+  warn
+  whichwrap=b,s
+  wildchar=<Tab>
+  wildcharm=0
+  wildignore=
+nowildignorecase
+  wildmenu
+  wildmode=longest:full
+  wildoptions=fuzzy,pum
+  winaltkeys=menu
+  winbar=%#lualine_a_command# untitled %#lualine_transitional_lualine_a_command_to_StatusLine#
+  winblend=8
+  winborder=
+  window=53
+nowinfixbuf
+nowinfixheight
+nowinfixwidth
+  winheight=1
+  winhighlight=
+  winminheight=1
+  winminwidth=1
+  winwidth=20
+  wrap
+  wrapmargin=0
+  wrapscan
+  write
+nowriteany
+  writebackup
+  writedelay=0

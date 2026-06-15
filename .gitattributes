@@ -1,0 +1,19 @@
+*        text eol=lf
+
+## Neovim config files
+
+*.lua    text eol=lf
+*.vim    text eol=lf
+
+## images
+
+*.jpg    binary
+*.png    binary
+*.ico    binary
+
+## repo management
+
+.gitattributes    export-ignore
+.gitignore        export-ignore
+.gitmodules       export-ignore
+

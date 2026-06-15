@@ -1,15 +1,20 @@
--- ---------------------------------------------------------------------------
--- configure neovim User Interface elements
--- ---------------------------------------------------------------------------
 
-local M = {}
-setmetatable(M, {
-  __index = M,
-  __call  = function(cls, ...) return cls:init(...) end
-})
+local class  = require('extern.middleclass')
+local Config = require('config')
+local fs     = require('util.fs')
+local path   = require('config.path')
 
-function M:init(opts)
-  local options = opts.ui or require('options.ui')
+local Interface = class('Interface', Config)
+
+
+function Interface:initialize()
+	Config.initialize(self)
+end
+
+function Interface:apply()
+
+  -- SECTION UI Elements
+	Logger:info("Setting up UI elements")
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
   -- Enable modelines in files
@@ -26,35 +31,36 @@ function M:init(opts)
   -- Show the tabline, 2 = always
   vim.opt.showtabline = 2
 
-  -- #region wildmenu
+  -- SECTION wildmenu
   vim.o.completeopt = 'menu,menuone'
 
   -- Display completion matches in the status line
   vim.opt.wildmenu = true
-  -- Use fuzzy search, and a Pop-Up UiSetupConfigenu
+  -- Use fuzzy search, and a Pop-Up
   vim.opt.wildoptions = { 'fuzzy', 'pum' }
   -- in list form to the longest match
   vim.o.wildmode = 'longest:full'
   vim.opt.wildignorecase = false
-  -- #endregion wildmenu
+  -- !SECTION wildmenu
 
   -- Flash window instead of audible ding
   vim.opt.visualbell = true
   -- Warn on shell commands when buffer modified
   vim.opt.warn = true
   --
-  vim.cmd.colorscheme(options.colors.colorscheme)
-  -- #region gui options
+  vim.cmd.colorscheme("darcula-dark")
+
+  -- SECTION gui options
   vim.opt.termguicolors = true
   vim.opt.background = 'dark'
 
   vim.opt.winblend = 8
   vim.opt.pumblend = 8
 
-  vim.opt.guifont = options.fonts.gui
-  if vim.g.neovide then M:setup_neovide() end
+  vim.opt.guifont = "AtkynsonMono\\ NF:h11"
 
-  -- #endregion gui options
+  if vim.g.neovide then self:setup_neovide() end
+  -- !SECTION
 
   -- Windows keep this many lines above and below the cursor
   vim.opt.scrolloff = 5
@@ -63,10 +69,14 @@ function M:init(opts)
   vim.opt.splitbelow = true
   -- vsplit creates a new window to the right
   vim.opt.splitright = true
+
+  -- !SECTION
+
+  require('config.setup.autocmds').setup()
 end
 
 ---Configuration for neovide, a "gui" for neovim
-function M:setup_neovide()
+function Interface:setup_neovide()
   -- g:neovide_transparency should be 0 if you want to unify transparency of
   -- content and title bar.
   vim.g.neovide_opacity = 0.95
@@ -107,4 +117,4 @@ function M:setup_neovide()
 end
 
 
-return M
+return Interface

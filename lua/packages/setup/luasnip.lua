@@ -1,4 +1,5 @@
-local path = require('util.path')
+local path = require('config.path')
+local fs      = require('util.fs')
 
 ---@class LazySpec
 local M = {
@@ -8,36 +9,28 @@ M.version = 'v2.*'
 -- jsregexp is installed via luarocks, so we dont need to build it here
 M.build = false
 
-M.init = function()
-  local vscode = require('luasnip.loaders.from_vscode')
-  local lua = require('luasnip.loaders.from_lua')
-  -- TODO: I want to get this from the options, but this file is required
-  --       by options and so it causes a loop to require options here
-  local root = path.join(path.init, 'snipppets')
-
-  -- load json format "vscode style" snippets
-  vscode.lazy_load({ paths = { path.join(root, 'vscode') } })
-
-  -- load lua format "luasnip native" snippets
-  lua.lazy_load({ paths = { path.join(root, 'lua') } })
-end
-
 M.opts = {
-  keep_roots = true,
-  link_roots = true,
-  link_children = true,
-
-  -- treesitter-hl has 100, use something higher (default is 200).
-  ext_base_prio = 300,
-  -- minimal increase in priority.
-  ext_prio_increase = 1,
   enable_autosnippets = true,
-  -- mapping for cutting selected text so it's usable as SELECT_DEDENT,
-  -- SELECT_RAW or TM_SELECTED_TEXT (mapped via xmap).
-  -- luasnip uses this function to get the currently active filetype.  Use
-  -- treesitter for getting the current filetype allows correctly resolving
-  -- the current filetype in eg. a markdown-code block or `vim.cmd()`.
-  -- ft_func = function() require('luasnip.extras.filetype_functions').from_cursor_pos() end,
+  store_selection_keys = "<Tab>"
 }
+
+M.config = function()
+  local loader = require('luasnip.loaders.from_lua')
+  local root = fs.join(path.init , 'snippets')
+
+  loader.lazy_load({ paths = root })
+
+  -- TODO: Gross.  I'd like to use the `keys` field for this.
+  vim.cmd[[
+  " Use Tab to expand and jump through snippets
+  imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>'
+  smap <silent><expr> <Tab> luasnip#jumpable(1) ? '<Plug>luasnip-jump-next' : '<Tab>'
+
+  " Use Shift-Tab to jump backwards through snippets
+  imap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
+  smap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
+  ]]
+
+end
 
 return M

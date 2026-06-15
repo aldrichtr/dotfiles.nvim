@@ -41,11 +41,40 @@ function is.a_string(v) return type(v) == "string" end
 ---@return boolean
 function is.a_function(v) return type(v) == "function" end
 
---- Check if value is a table.
+--- Check if value is a table. Could be a `dictionary` or an `array` type
 ---@param v any
 ---@return boolean
 function is.a_table(v) return type(v) == "table" end
 
+
+--- Check if value is an `array-type table`.
+--- !needs testing
+---@param v any
+---@return boolean
+function is.a_array(v)
+  if not is.a_table(v) then return false end
+
+  -- objects always return empty size
+  if #v > 0 then return true end
+
+  -- only objects can have empty length with elements inside
+  for k, l in pairs(v) do return false end
+
+  -- if no elements it can be an array
+  return true
+end
+
+--- Check if value is an `dictionary-type table`.
+--- !needs testing
+---@param v any
+---@return boolean
+function is.a_dictionary(v)
+  if not is.a_table(v) then return false end
+  for k, _ in pairs(v) do
+    if is.present(v[k]) then return true end
+  end
+  return false
+end
 --- Check if value is userdata.
 ---@param v any
 ---@return boolean
@@ -79,6 +108,17 @@ end
 function is.filled(v)
   if is.a_string(v) then return v ~= "" end
   if is.a_table(v) then return next(v) ~= nil end
+  return false
+end
+
+--- Check if the given table contains the key
+---@param t table The table to search
+---@param k string The name of the key to search for
+---@return boolean
+function is.a_key_of(t,k)
+  if is.a_table(t) then
+    return is.present(t[k])
+  end
   return false
 end
 

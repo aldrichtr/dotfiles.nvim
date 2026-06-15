@@ -1,34 +1,35 @@
 
--- <https://github.com/kikito/middleclass/wiki/Quick-Example>
--- Add a new command, `class` using the middleclass library
-_G.class = require('extern.middleclass')
+local fs     = require('util.fs')
+local path   = require('config.path')
+local config = require('config')
+local logger = require('util.logger')
 
--- I downloaded and modified the vlog script.
--- NOTE: I made it global here because it can be used anywhere in the init that I'm having issues
+local options = {
+  level = os.getenv("NVIM_LOG_LEVEL") or "WARN",
+  format = "[!d<%y.%m.%d>]!LL: (!p:!n) !m",
+}
 
-_G.log = require('util.log')
-
-log.debug(string.rep("-",40))
-log.debug("- Beginning neovim initialization script")
-
-local Config = require('config')
-local Lazy = require('manager.lazy')
-local LangServ = require('manager.langserv')
-
-Lazy = Lazy:new()
-Config = Config:new()
-LangServ = LangServ:new()
+local log_config = fs.join(path.init, 'logger.json')
 
 
-Lazy:configure()
-Lazy:load()
-LangServ:configure()
-LangServ:load()
-Config:configure()
-Config:load()
+_G.Logger = logger:new()
 
--- This is where all the settings start to get applied
+Logger:set(options)
 
--- ------------------------------------------------------------------------------
-log.debug("Initialization complete")
-log.debug(string.rep("-",40))
+if fs.exists(log_config) then Logger:read_json(log_config) end
+
+Logger:info("- Beginning neovim initialization script" .. string.rep("-", 40))
+
+
+_G.Config = config:new()
+
+Config.stages = {
+  'before',
+  'lazy', 'lsp',
+  'setup', 'keybinds',
+  'after'
+}
+
+Config:apply()
+
+Logger:info("Initialization complete" .. string.rep("-", 40))

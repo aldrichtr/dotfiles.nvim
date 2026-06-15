@@ -11,7 +11,6 @@ M.dependencies = { 'nvim-tree/nvim-web-devicons' }
 M.keys = function()
   local wk = require('which-key')
   local bufferline = require('bufferline')
-  local builtin = require('telescope.builtin')
 
   wk.add({
     { '<leader>b', group = 'Buffers' },
@@ -22,7 +21,7 @@ M.keys = function()
   })
 
   local keys = {
-  -- #region Goto buffer
+  -- SECTION Goto buffer
   { '<leader>b1', '<cmd>BufferLineGoToBuffer 1<cr>', desc = 'Goto buffer 1' },
   { '<leader>b2', '<cmd>BufferLineGoToBuffer 2<cr>', desc = 'Goto buffer 2' },
   { '<leader>b3', '<cmd>BufferLineGoToBuffer 3<cr>', desc = 'Goto buffer 3' },
@@ -35,10 +34,8 @@ M.keys = function()
 
     { '<leader>bn', '<cmd>BufferLineCycleNext<cr>', desc = 'Goto the next buffer' },
     { '<leader>bp', '<cmd>BufferLineCyclePrev<cr>', desc = 'Goto the prev buffer' },
-  -- #endregion
-    --
-    { '<leader>bb', function() builtin.buffers() end, desc = 'Select buffer using telescope', },
-    --
+  -- !SECTION
+
     { '<leader>bcc', '<cmd>BufferLinePickClose<cr>', desc = 'Choose a buffer to close' },
     { '<leader>bcl', '<cmd>BufferLineCloseLeft<cr>', desc = 'Close visible buffers to the left', },
     { '<leader>bcr', '<cmd>BufferLineCloseRight<cr>', desc = 'Close visible buffers to the right', },
