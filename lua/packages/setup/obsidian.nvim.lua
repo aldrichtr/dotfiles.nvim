@@ -22,7 +22,9 @@ M.opts = {
   daily_notes = {
     folder = 'journal',
     date_format = '%Y.%m.%d',
-  }
+  },
+  preferred_link_style = 'wiki',
+
 }
 
 return M

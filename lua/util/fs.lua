@@ -178,11 +178,11 @@ end
 ---| '"fifo"' # Find fifo queues
 
 ---@class FinderOptions
----@field root? string The root to start the find operation in. If omitted, use
+---@field dir? string The root to start the find operation in. If omitted, use
 --- the caller's directory as the root.
----@field match? string A list of patterns to apply to object names for inclusion. If
+---@field matches? string A list of patterns to apply to object names for inclusion. If
 --- ommited, use `{'(.+).lua$'}`
----@field exclude? table A list of object names to exclude.
+---@field excludes? table A list of object names to exclude.
 ---@field type? findType The type of object to find.  If ommited, use `'file'`
 ---@field limit? number The upper limit of objects to find.  If ommitted use
 --- `math.huge`
@@ -191,37 +191,41 @@ end
 ---@param params FinderOptions Options used to find objects
 ---@return table|nil Return a list of found objects or nil
 function FileSystem.find(params)
-  local directory, match, exclude, files, limit, type
+  local directory, matches, excludes, files, limit, type
 
   if is.a_string(params) then
     directory = params
   elseif is.a_array(params) then
     directory = params[1] or nil
-    match     = params[2] or nil
-    exclude   = params[3] or nil
+    matches   = params[2] or nil
+    excludes  = params[3] or nil
     type      = params[4] or nil
     limit     = params[5] or nil
   elseif is.a_dictionary(params) then
     directory = params.dir or nil
-    matches     = params.matches or nil
-    excludes   = params.excludes or nil
+    matches   = params.matches or nil
+    excludes  = params.excludes or nil
     type      = params.type or nil
     limit     = params.limit or nil
   end
 
-  -- just for debugging purposes
-  if is.a_table(params) then
-    for k,v in pairs(params) do
-      Logger:trace(string.format("Parameter '%s' => '%s'", k, v))
-    end
-  end
 
   -- Handle any empty params ------------------------------------------------
   -- 1. directory -----------------------------------------------------------
   -- use the callers directory if not given
   if is.empty(directory) then
+    Logger:trace("No starting directory given. Using caller's directory")
     local info = debug.getinfo(2, 'S')
-    directory = NeovimFs.dirname(info.short_src)
+    local fullname,_ = info.source:gsub('^@', '')
+    directory = FileSystem.parent(fullname)
+    local f = FileSystem.filename(fullname)
+    local ex = f .. '$'
+    Logger:trace("Adding %s as the base directory", directory)
+
+    if is.empty(excludes) then
+      excludes = { ex }
+      Logger:trace("Adding '%s' as the exclude", table.concat(excludes, ', '))
+    end
   end
   -- 2. match --------------------------------------------------------------
   if is.empty(matches) then matches = { "(.+).lua$" } end
@@ -237,53 +241,24 @@ function FileSystem.find(params)
   -- -----------------------------------------------------------------------
   -- finally: call vim.fs.find
 
-  Logger:trace("Finding %s in '%s' that match '%s'", type, directory, matches)
+  Logger:trace("Finding all %ss in '%s' that match '%s' except '%s'",
+    type, directory, table.concat(matches, ', '), table.concat(excludes, ', '))
 
   files = NeovimFs.find(
-    function(name, path) 
+    function(name, path)
 			Logger:trace('- Checking %s in %s', name, path)
-			-- matcher(name, path, match, exclude) 
-			local name_matches  = false
-			local name_excluded = false
-			local path_excluded = false
-
-			for _, match in ipairs(matches) do
-				if name:match(match) then
-					Logger:trace("'%s' matches '%s'", name, match)
-					name_matches = true
-					break
-				end
-			end
-
-			for _, exclude in ipairs(excludes) do
-				if name:match(exclude) then
-					Logger:trace("'%s' excluded by '%s'", name, exclude)
-					name_excluded = true
-					break
-				end
-				if path:match(exclude) then
-					Logger:trace("'%s' excluded by '%s'", path, exclude)
-					path_excluded = true
-					break
-				end
-			end
-
-			if name_matches then
-				if name_excluded or path_excluded then
-					Logger:trace('%s is not a match', name)
-					return false
-				else
-					Logger:trace('%s is a match', name)
-					return true
-				end
-			else
-					Logger:trace('%s is not a match', name)
-				return false
-			end
+      local result = matcher(name, path, matches, excludes)
+      Logger:trace('Result: %s', result)
+      return result
 		end,
     { type = type, limit = limit, path = directory })
 
-  Logger:trace("- found %s", table.concat(files, ", "))
+  if #files == 0 then
+    Logger:trace("No files found")
+  else
+    Logger:trace("- found %s", table.concat(files, ", "))
+  end
+
   return files
 end
 
