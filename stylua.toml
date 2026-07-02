@@ -6,7 +6,7 @@ quote_style = 'AutoPreferSingle'
 call_parentheses = 'Always'
 space_after_function_names = 'Never'
 block_newline_gaps = 'Preserve'
-collapse_simple_statement = 'Always'
+collapse_simple_statement = 'ConditionalOnly'
 
 
 [sort_requires]

@@ -1,5 +1,6 @@
 
-local is = require("util.is")
+local class = require('extern.middleclass')
+local is = require('util.is')
 
 -- SECTION Meta information
 
@@ -15,6 +16,8 @@ local is = require("util.is")
 ---| '""' # unknown / empty
 ---| '"lua"'
 ---| '"c"'
+
+---@alias StackIndex number
 
 ---@class ExtentInfo
 ---@field text string The content
@@ -34,82 +37,81 @@ local is = require("util.is")
 ---@class Caller
 ---@field scope Scope
 ---@field type LangType
+---@field index StackIndex
 ---@field name string The name of the caller
----@field file LocationInfo File and line information of the caller
+---@field extent ExtentInfo
 
 -- !SECTION
 
 -- SECTION Initialization
-local Caller = {
-  scope = "",
-  stack_index = 0,
-  name = "",
-  type = "",
-  path = "",
-  extent = {
-    text         = "",
-    call         = "",
-    start_line   = 0,
-    current_line = 0,
-    end_line     = 0,
-  },
-}
+local Caller = class('Caller')
 
-setmetatable(Caller, {
-  __index = Caller,
-  __call = function(cls, ...)
-    return cls.new(cls, ...)
-  end,
-})
-
-local debug_options = {
+local debug_options = table.concat({
   'n', -- name
   'S', -- source, short_src, linedefined, lastlinedefined
   'l', -- currentline,
   'u', -- nups
   'f', -- function
   'L', -- table of numbers of lines that are valid on a function
-}
+}, '')
 
 ---@public
----@param count integer  the number of callers back from the
+---@param index StackIndex The number of callers back from the
 --- caller of this function.  0 or nil is the calling function,
 --- 1 would be the caller of the caller, etc.
----@return Caller
-function Caller:new(count)
+---@param options string Info tokens to send to `getinfo`
+function Caller:initialize(index, options)
+  vim.tbl_deep_extend('force', self, {
+    scope = '',
+    index = 0,
+    name = '',
+    type = '',
+    path = '',
+    extent = {
+      text = '',
+      call = '',
+      start_line = 0,
+      current_line = 0,
+      end_line = 0,
+    },
+  })
+
   local jumps = 2 -- 1 == this function, 2 == the function that calls Caller:new
-  if is.a_number(count) then jumps = jumps + count end
+  local tokens = options or debug_options
+  if is.a_number(index) then jumps = jumps + index end
+  Logger:trace('calling getinfo with %d and %s', jumps, tokens)
+  local remote = debug.getinfo(jumps, tokens)
 
-  local remote = debug.getinfo(jumps, "nSlufL")
-
-  return self
+  self:convert(remote)
 end
 -- !SECTION
 
----@private
----@param
-local function getExtent()
+---@public
+---@return string extent
+function Caller:getExtent()
+  if #self.extent.text > 0 then return self.extent end
+
+  local text = {}
+
   if is.filled(self.source) then
     self.extent.text = self.source
     return self.source
   end
   if is.filled(self.path) then
     self.extent.text = {}
-    local f = io.open(self.path, "r")
+    local f = io.open(self.path, 'r')
     assert(f ~= nil, string.format("Error, could not read file '%s'", self.path))
     local l = 0
-    local collect = {}
     for line in f:lines() do
       l = l + 1
       if l >= self.extent.start then
-        if l == self.extent.line then
-          line = string.format(">%s", line)
-        end
-        table.insert(collect, line)
+        if l == self.extent.line then line = string.format('>%s', line) end
+        table.insert(text, line)
       end
     end
-    self.extent.text =
+    return text:concat('\n')
   end
+  return ''
 end
 
 ---@public
@@ -119,7 +121,7 @@ function Caller:is_file(s)
   local source = s or self.source
   if is.a_string(source) then
     local first = source:sub(1, 1)
-    return first == "@"
+    return first == '@'
   end
   return false
 end

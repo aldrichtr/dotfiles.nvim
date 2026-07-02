@@ -85,6 +85,7 @@ function Logger:initialize(config)
 
   self.file = {
     keep = 5,
+    filetype = 'log',
     enabled = false,
     dir = fs.join(vim.fn.stdpath('data'), 'logs', 'init'),
     name = 'nvim.init-test',
@@ -94,6 +95,8 @@ function Logger:initialize(config)
     enabled = true,
     use_snacks = false,
   }
+
+  self.state = 'INIT'
 
   if is.present(config) then self:set(config) end
   if self.file.enabled then self:rotate_file() end
@@ -115,6 +118,7 @@ function Logger:set(config)
   -- overwritten
   if is.present(config.file) then
     if is.present(config.file.enabled) then self.file.enabled = config.file.enabled end
+    if is.present(config.file.filetype) then self.file.filetype = config.file.filetype end
     if is.present(config.file.keep) then self.file.keep = config.file.keep end
     if is.present(config.file.dir) then self.file.dir = config.file.dir end
     if is.present(config.file.name) then self.file.name = config.file.name end
@@ -151,6 +155,102 @@ function Logger:read_json(path)
   end
 end
 -- !SECTION Configuration
+
+-- SECTION Writers
+
+---@private
+--- Writes the message to the neovim message facility
+---@param level string The `LogLevel` of the message
+---@param msg string The formatted message
+---@return nil
+function Logger:write_console(level, msg)
+  vim.notify(msg, LogLevel[level])
+end
+
+-- SECTION File logging utilities
+
+---@private
+--- Writes the message to the file.  The path is determined by joining `file.path`
+--- and `file.name`
+---@param msg string The formatted message
+---@return nil
+function Logger:write_file(_, msg)
+  if not fs.exists(self.file.dir) then vim.uv.fs_mkdir(self.file.dir, tonumber('755', 8)) end
+
+  local f = self:format_path()
+  local fp = io.open(f, 'a')
+  assert(fp ~= nil, 'Error! failed to open file: ' .. f)
+  fp:write(msg)
+  fp:close()
+end
+
+---@private
+--- Create a path from the components in the `file` table
+---@return string A fully-qualified path to the current log file
+function Logger:format_path()
+  local ext = self.file.ext
+  if ext:sub(1, 1) ~= '.' then
+    -- here, lemme fix that for you
+    ext = '.' .. ext
+    self.file.ext = ext
+  end
+  local fname = self.file.name .. self.file.ext
+  return fs.join(self.file.dir, fname)
+end
+
+---@public
+--- Open the log file in a new buffer
+function Logger:open_file()
+  vim.cmd({ cmd = 'edit', args = { self:format_path() } })
+end
+
+---@private
+--- Initialize the log file
+---@return nil
+function Logger:start_file()
+  local f = self:format_path()
+  local fp = io.open(f, 'w')
+  fp:write(string.format('# vim: ft=%s\n\n', self.file.filetype))
+  fp:close()
+end
+
+---@private
+--- Move existing logfiles by renaming them using numbers in the filename.
+--- `init.log` => `init.1.log` => `init.2.log`, etc.
+---@return nil
+function Logger:rotate_file()
+  -- we only need to rotate if the set logfile exists
+  local current = self:format_path()
+  if fs.exists(current) then
+    local base = fs.basename(self.file.name)
+    local dir = self.file.dir
+    local ext = self.file.ext
+    local i = self.file.keep - 1
+    local rename = vim.uv.fs_rename
+    local function format_name(n)
+      return string.format('%s.%d%s', base, n, ext)
+    end
+    -- 1. delete the oldest file first if it exists
+    -- 3. move current to .1
+    local last = fs.join(dir, format_name(i))
+    if fs.exists(last) then vim.fs.rm(last, { force = true }) end
+    i = i - 1
+    local this, next
+    -- 2. starting at the max amount - 1, move to the next index
+    --    move it one back
+    while i > 1 do
+      this = fs.join(dir, format_name(i))
+      next = fs.join(dir, format_name(i + 1))
+      if fs.exists(this) then rename(this, next) end
+      i = i - 1
+    end
+    -- 3. rename current to .1
+    rename(current, fs.join(dir, format_name(1)))
+  end
+  self:start_file()
+end
+
+-- !SECTION
 
 -- SECTION Message handling
 
@@ -194,77 +294,6 @@ function Logger:format_message(opts, message)
 end
 
 -- !SECTION
-
--- SECTION Writers
-
----@private
---- Writes the message to the neovim message facility
----@param level string The `LogLevel` of the message
----@param msg string The formatted message
----@return nil
-function Logger:write_console(level, msg) vim.notify(msg, LogLevel[level]) end
-
----@private
---- Writes the message to the file.  The path is determined by joining `file.path`
---- and `file.name`
----@param msg string The formatted message
----@return nil
-function Logger:write_file(_, msg)
-  if not fs.exists(self.file.dir) then vim.uv.fs_mkdir(self.file.dir, tonumber('755', 8)) end
-
-  local f = self:format_path()
-  local fp = io.open(f, 'a')
-  assert(fp ~= nil, 'Error! failed to open file: ' .. f)
-  fp:write(msg)
-  fp:close()
-end
-
----@private
---- Create a path from the components in the `file` table
----@return string A fully-qualified path to the current log file
-function Logger:format_path()
-  local ext = self.file.ext
-  if ext:sub(1, 1) ~= '.' then
-    -- here, lemme fix that for you
-    ext = '.' .. ext
-    self.file.ext = ext
-  end
-  local fname = self.file.name .. self.file.ext
-  return fs.join(self.file.dir, fname)
-end
-
----@private
---- Move existing logfiles by renaming them using numbers in the filename.
---- `init.log` => `init.1.log` => `init.2.log`, etc.
----@return nil
-function Logger:rotate_file()
-  -- we only need to rotate if the set logfile exists
-  local current = self:format_path()
-  if fs.exists(current) then
-    local base = fs.basename(self.file.name)
-    local dir = self.file.dir
-    local ext = self.file.ext
-    local i = self.file.keep - 1
-    local rename = vim.uv.fs_rename
-    local function format_name(n) return string.format('%s.%d%s', base, n, ext) end
-    -- 1. delete the oldest file first if it exists
-    -- 3. move current to .1
-    local last = fs.join(dir, format_name(i))
-    if fs.exists(last) then vim.fs.rm(last, { force = true }) end
-    i = i - 1
-    local this, next
-    -- 2. starting at the max amount - 1, move to the next index
-    --    move it one back
-    while i > 1 do
-      this = fs.join(dir, format_name(i))
-      next = fs.join(dir, format_name(i + 1))
-      if fs.exists(this) then rename(this, next) end
-      i = i - 1
-    end
-    -- 3. rename current to .1
-    rename(current, fs.join(dir, format_name(1)))
-  end
-end
 
 ---@private
 --- The abstract writer function.  gathers and formats information before

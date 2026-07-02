@@ -1,6 +1,6 @@
 
 local M = {
-  'stevearc/conform.nvim'
+  'stevearc/conform.nvim',
 }
 
 M.event = { 'BufWritePre' }
@@ -13,17 +13,24 @@ M.opts = {
     rust = { 'rustfmt', lsp_format = 'fallback' },
   },
   default_format_opts = {
-    lsp_format = 'fallback'
+    async = true,
+    lsp_format = 'fallback',
   },
-  format_on_save = { timeout_ms = 500 }
+  format_on_save = { timeout_ms = 500 },
 }
 
 M.keys = {
-  { mode = { 'i', 'n', 'v' },
-    '<M-F>', function() require('conform').format() end, {desc = 'Format buffer or selection with conform' }
+  { '<M-F>', function() require('conform').format() end,
+    mode = { 'i', 'n', 'v' }, desc = 'Format buffer or selection with conform',
   },
-  { "<leader>=", function() require('conform').format({ async = true, lsp_format = 'fallback' }) end,
-    desc = "Format document with conform"}
+  { '<leader>=', function() require('conform').format() end,
+    desc = 'Format document with conform',
+    mode = { 'n' },
+  },
+  { '=', function() require('conform').format() end,
+    desc = 'Format range with conform',
+    mode = { 'v' },
+  },
 }
 
 return M

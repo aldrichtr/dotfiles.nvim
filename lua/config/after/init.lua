@@ -1,17 +1,19 @@
 
+local Stage = require('config.stage')
+local class = require('extern.middleclass')
+local fs = require('util.fs')
 local path = require('config.path')
-local fs   = require('util.fs')
-local class  = require('extern.middleclass')
-local Config = require('config')
 
-local After = class('After', Config)
+local After = class('After', Stage)
 
 function After:initialize()
-	Config.initialize(self)
+  Stage.initialize(self)
+  self.label = 'after'
+  self.priority = 99
 end
 
 function After:apply()
-  Logger:info("Setting final options")
+  Logger:info('Setting final options')
   local tsdir = fs.join(path.LocalAppData, 'tree-sitter')
   vim.opt.rtp:prepend(tsdir)
 end

@@ -1,64 +1,54 @@
 
-local class  = require('extern.middleclass')
-local Config = require('config')
-local fs     = require('util.fs')
-local path   = require('config.path')
+local M = {}
 
-local Editor = class('Editor', Config)
+function M:setup()
+	Logger:info('Setting up Editor elements')
+	vim.o.fileformats = 'unix'
 
+	-- SECTION Buffer elements
 
-function Editor:initialize()
-	Config.initialize(self)
+	-- Enable modelines in files
+	vim.o.modeline = true
+	-- On the first and last two lines
+	vim.o.modelines = 2
+
+	-- ! use the vscode region markers for folding by default
+	vim.o.foldmethod = 'marker'
+	vim.o.foldmarker = 'SECTION,!SECTION'
+
+	vim.o.number = true -- Show the current line numbers
+	vim.o.relativenumber = true -- and relative number
+
+	vim.o.ruler = true -- Show the cursor position in the status bar
+	vim.o.cursorline = true -- Highlight the current line
+	vim.opt.cursorlineopt = { 'number', 'line' }
+
+	-- SECTION spaces and tabs
+	vim.o.expandtab = true -- Insert spaces instead of tabs
+	vim.o.smarttab = true -- Insert spaces according to shift width
+	vim.o.shiftwidth = 2 -- when shifting lines
+	vim.o.tabstop = 2 -- how many spaces is a tab worth
+	vim.o.softtabstop = 2 -- while performing editing
+
+	vim.o.list = true -- Show Whitespace
+	vim.opt.listchars = {
+		tab = '>-',
+		trail = '·',
+	}
+	-- !SECTION spaces and tabs
+	-- !SECTION Buffer elements
+
+	-- SECTION Editor functions
+
+	-- SECTION search
+	vim.o.hlsearch = true -- Highlight results of search
+	vim.o.incsearch = true --  incrementally
+
+	vim.o.ignorecase = true -- Ignore case,
+	vim.o.smartcase = true --  unless there are capitals in the pattern
+	vim.o.magic = true -- Change the special characters in search patterns
+	-- !SECTION search
+	-- !SECTION Editor functions
 end
 
-function Editor:apply()
-	Logger:info("Setting up Editor elements")
-  vim.o.fileformats = 'unix'
-
-  -- SECTION Buffer elements
-
-  -- Enable modelines in files
-  vim.o.modeline = true
-  -- On the first and last two lines
-  vim.o.modelines = 2
-
-  -- ! use the vscode region markers for folding by default
-  vim.o.foldmethod = 'marker'
-  vim.o.foldmarker = 'SECTION,!SECTION'
-
-  vim.o.number = true -- Show the current line numbers
-  vim.o.relativenumber = true -- and relative number
-
-  vim.o.ruler = true -- Show the cursor position in the status bar
-  vim.o.cursorline = true -- Highlight the current line
-  vim.opt.cursorlineopt = { 'number', 'line' }
-
-  -- SECTION spaces and tabs
-  vim.o.expandtab = true -- Insert spaces instead of tabs
-  vim.o.smarttab = true  -- Insert spaces according to shift width
-  vim.o.shiftwidth = 2   -- when shifting lines
-  vim.o.tabstop = 2      -- how many spaces is a tab worth
-  vim.o.softtabstop = 2  -- while performing editing
-
-  vim.o.list = true -- Show Whitespace
-  vim.opt.listchars = {
-    tab = '>-',
-    trail = '·',
-  }
-  -- !SECTION spaces and tabs
-  -- !SECTION Buffer elements
-
-  -- SECTION Editor functions
-
-  -- SECTION search
-  vim.o.hlsearch = true -- Highlight results of search
-  vim.o.incsearch = true --  incrementally
-
-  vim.o.ignorecase = true -- Ignore case,
-  vim.o.smartcase = true --  unless there are capitals in the pattern
-  vim.o.magic = true -- Change the special characters in search patterns
-  -- !SECTION search
-  -- !SECTION Editor functions
-end
-
-return Editor
+return M

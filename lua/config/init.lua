@@ -5,56 +5,68 @@ local is = require('util.is')
 local load = require('util.load')
 
 local Config = class('Config')
+local Stage = require('config.stage'):new()
 
 function Config:initialize(opts)
-  self.paths = require('config.path')
   self.stages = {}
+
+  self.paths = require('config.path')
   if is.present(opts) then
     if is.present(opts.stages) then self.stages = opts.stages end
   end
 end
 
----@private
---- Looks for `config/<name>.lua` or `config/<name>/init.lua`
----@param name string Name of module or directory to check
----@return boolean True if the given `name` is a module
-function Config:is_module(name)
-  -- look for name.lua or name/init.lua
-  local fname = string.format('%s.lua', name)
-  local iname = string.format('%s/init.lua', name)
-  local path
-  --
-  path = fs.join(self.paths.config, fname)
-  Logger:debug('Testing if %s exists', path)
-  if fs.exists(path) then return true end
-  --
-  path = fs.join(self.paths.config, iname)
-  Logger:debug('Testing if %s exists', path)
-  if fs.exists(path) then return true end
-  return false
+function Config:get_stages()
+  local stage, mod, err, modp, label, pri
+  local stages = {}
+  local pri_index = 90
+  local iter = vim.fs.dir(self.paths.config, { depth = 1 })
+  for name, type in pairs(iter) do
+    if type == 'directory' then
+      modp = fs.convert_to_module(name)
+      mod, err = load:try(modp)
+      if not mod then
+        Logger:error('couldnt load stage %s: %s', modp, err)
+      else
+        if mod and type(mod['new']) then
+          stage = mod:new()
+          if stage:isSubclassOf(Stage) then
+            if is.empty(stage.label) then
+              label = fs.basename(name)
+              Logger:warn('Stage %s does not have a label defined. Assigning %s', modp, label)
+            else
+              label = stage.label
+            end
+
+            if is.empty(stage.priority) then
+              pri = pri_index
+              Logger:warn('Stage %s does not have a priority defined. Assigning %d', modp, pri)
+              pri_index = pri_index + 1
+            else
+              pri = stage.priority
+            end
+            stages[pri] = { label = label, stage = stage }
+          end -- if subclass
+        end -- if new
+      end -- if mod
+    end -- if directory
+  end -- for each
+  return stages
 end
 
 ---@public
---- Apply the given `Config`
----@param spec string
-function Config:apply(opts)
+function Config:apply()
   Logger:info('Configuration setup initialized')
   for _, stage in ipairs(self.stages) do
-    Logger:trace('%s Starting stage %s', string.rep('-', 40), stage)
-    Logger:debug('Checking if %s is a module', stage)
-    if self:is_module(stage) then
-      Logger:debug('%s is a module.', stage)
-      self:load('config.' .. stage)
-    else
-      Logger:debug('%s is not a module.  Looking for files', stage)
-      self:load_each(stage)
-    end
-  end -- for each stage
+    Logger:info('%s Starting stage %s', string.rep('-', 40), stage)
+    self:load('config.' .. stage)
+  end
 end
 
----@private
+---@public
+--- First load the given module, then check if it has the
 function Config:load(spec)
-  local mod, Stage, err
+  local mod, obj, err
   Logger:debug('Attempting to load %s', spec)
   mod, err = load:try(spec)
   if not mod then
@@ -65,43 +77,18 @@ function Config:load(spec)
     Logger:debug('The module was loaded')
     if type(mod['new']) == 'function' then
       Logger:debug('Calling new')
-      Stage = mod:new()
-      if type(Stage['apply']) == 'function' then
+      obj = mod:new()
+      if type(obj['apply']) == 'function' then
         Logger:debug('Calling apply')
-        Stage:apply()
+        obj:apply()
       else
-        Logger:debug('No apply method')
+        Logger:debug('No apply() method')
       end
     else
-      Logger:debug('No apply method')
+      Logger:debug('No new() method')
     end
   end
   Logger:trace('Finished loading %s', spec)
-end
-
----@protected
---- Load and apply each file in a given directory
----@param name string The name of the stage to load
----@return nil
-function Config:load_each(name)
-  local finder = {
-    dir = fs.join(self.paths.config, name),
-    matches = { '(.+).lua$' },
-    excludes = { 'init.lua$' }, -- shouldn't have to, but just incase
-    type = 'file',
-  }
-  local files = fs.find(finder)
-  local p
-  if is.filled(files) then
-    Logger:debug(' - found files. Loading now')
-    for _, file in ipairs(files) do
-      p = fs.convert_to_module(file)
-      self:load(p)
-    end -- for each file
-  else -- nothing in files
-    Logger:warn('%s contained no valid files to load', p)
-  end -- is there files
-
 end
 
 -- SECTION Return

@@ -1,26 +1,26 @@
 
 local M = {
-  'folke/todo-comments.nvim'
+  'folke/todo-comments.nvim',
 }
 
 M.lazy = false
 
-
 M.dependencies = {
-  'nvim-lua/plenary.nvim'
+  'nvim-lua/plenary.nvim',
 }
 
 M.opts = {
-  signs = true,      -- show icons in the signs column
+  signs = true, -- show icons in the signs column
   sign_priority = 8, -- sign priority
   -- keywords recognized as todo comments
   keywords = {
     TODO = { icon = ' ', color = 'info' },
-    NOTE = { icon = ' ', color = 'hint', alt = { 'INFO' } }
+    NOTE = { icon = ' ', color = 'hint', alt = { 'INFO' } },
+    SECTION = { icon = '', color = 'section' },
   },
   gui_style = {
-    fg = 'BOLD',         -- The gui style to use for the fg highlight group.
-    bg = 'NONE',         -- The gui style to use for the bg highlight group.
+    fg = 'BOLD', -- The gui style to use for the fg highlight group.
+    bg = 'NONE', -- The gui style to use for the bg highlight group.
   },
   merge_keywords = false, -- when true, custom keywords will be merged with the defaults
 
@@ -35,12 +35,12 @@ M.opts = {
     multiline_pattern = '^.',
     -- extra lines that will be re-evaluated when changing a line
     multiline_context = 10,
-    before = '',        -- "fg" or "bg" or empty
-    keyword = 'wide',   -- "fg", "bg", "wide", "wide_bg", "wide_fg" or empty. (wide and wide_bg is the same as bg, but will also highlight surrounding characters, wide_fg acts accordingly but with fg)
-    after = 'fg',       -- "fg" or "bg" or empty pattern = [[.*<(KEYWORDS)\s*:]], pattern or table of patterns, used for highlighting (vim regex)
+    before = '', -- "fg" or "bg" or empty
+    keyword = 'fg', -- "fg", "bg", "wide", "wide_bg", "wide_fg" or empty. (wide and wide_bg is the same as bg, but will also highlight surrounding characters, wide_fg acts accordingly but with fg)
+    after = 'fg', -- "fg" or "bg" or empty pattern = [[.*<(KEYWORDS)\s*:]], pattern or table of patterns, used for highlighting (vim regex)
     comments_only = true, -- uses treesitter to match keywords in comments only
     max_line_len = 400, -- ignore lines longer than this
-    exclude = {},       -- list of file types to exclude highlighting
+    exclude = {}, -- list of file types to exclude highlighting
   },
   -- list of named colors where we try to extract the guifg from the
   -- list of highlight groups or use the hex color if hl not found as a fallback
@@ -49,6 +49,7 @@ M.opts = {
     warning = { 'DiagnosticWarn', 'WarningMsg', '#FBBF24' },
     info = { 'DiagnosticInfo', '#2563EB' },
     hint = { 'DiagnosticHint', '#10B981' },
+    section = { 'Identifier', '#FFFFFF' },
     default = { 'Identifier', '#7C3AED' },
     test = { 'Identifier', '#FF00FF' },
   },
@@ -63,12 +64,12 @@ M.opts = {
     },
     -- regex that will be used to match keywords.
     pattern = [[\b(KEYWORDS):]], -- ripgrep regex
-  }
+  },
 }
 
 M.keys = {
   { '<leader>!n', function() require('todo-comments').jump_next() end, desc = 'Next todo comment' },
-  { '<leader>!p', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' }
+  { '<leader>!p', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' },
 }
 
 return M

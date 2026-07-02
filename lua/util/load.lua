@@ -4,20 +4,21 @@
 ---@field match string A lua glob pattern for matching files
 ---@field exlude array A list of
 
+local fs = require('util.fs')
+local is = require('util.is')
 local path = require('config.path')
-local fs   = require('util.fs')
-local is   = require('util.is')
 
 local Load = {}
-setmetatable( Load , {
+setmetatable(Load, {
   __index = Load,
-  __call  = function(cls, ...) return cls.new(cls, ...) end
+  __call = function(cls, ...)
+    return cls.new(cls, ...)
+  end,
 })
 
 function Load:new()
   local instance = setmetatable({}, Load)
-  instance.name = 'config.keybinds'
-  
+
   return instance
 end
 
@@ -27,21 +28,17 @@ end
 ---@param opts any Optional arguments to pass to each module.
 ---@return table modules Table of required modules.
 function Load:all(dir, opts)
-  if is.empty(dir) then
-    Logger:error("'dir' must not be empty")
-  end
+  if is.empty(dir) then Logger:error("'dir' must not be empty") end
   Logger:trace(string.format("Loading all lua files in '%s'", dir))
   local options = {}
   local finder = {
     dir = dir,
-    match = opts.match or "(.+).lua$",
-    exclude = opts.exclude or {"init.lua$"},
+    match = opts.match or '(.+).lua$',
+    exclude = opts.exclude or { 'init.lua$' },
 
   }
 
-  if is.present(opts.options) then
-    options = opts.options
-  end
+  if is.present(opts.options) then options = opts.options end
 
   local files = fs.find(finder)
 
@@ -50,13 +47,13 @@ function Load:all(dir, opts)
   if is.filled(files) then
     for _, file in ipairs(files) do
       local mod = path.convert_to_module(file)
-      Logger:trace("loading module", mod)
+      Logger:trace('loading module', mod)
       if is.present(options) then
         result = require(mod)(options)
       else
         result = require(mod)
       end
-      table.insert(results,result)
+      table.insert(results, result)
     end
   end
   return results
@@ -107,8 +104,8 @@ end
 ---@return string|nil err Error message if failure occurred.
 function Load:try(mod)
   local success, result
-	Logger:trace('Attempting to call require with %s', mod)
-	success, result = pcall(require, mod)
+  Logger:trace('Attempting to call require with %s', mod)
+  success, result = pcall(require, mod)
 
   if success then
     return result
@@ -124,27 +121,29 @@ end
 ---@param ... any Optional arguments to pass to the module.
 ---@return any|nil result The required module or nil on failure.
 function Load:xtry(mod, handler, ...)
-  if type(handler) ~= "function" then
-    error("load.xtry: Expected a function as the second parameter")
-  end
+  if type(handler) ~= 'function' then error('load.xtry: Expected a function as the second parameter') end
 
-  local args = {...}
-  Logger:trace("xpcall to require " .. mod .. (#args == 0 and " with no options" or " with options"))
+  local args = { ... }
+  Logger:trace('xpcall to require ' .. mod .. (#args == 0 and ' with no options' or ' with options'))
 
   local called
   if #args == 0 then
-    called = function() return require(mod) end
+    called = function()
+      return require(mod)
+    end
   else
-    called = function() return require(mod)(table.unpack(args)) end
+    called = function()
+      return require(mod)(table.unpack(args))
+    end
   end
 
   local success, result = xpcall(called, handler)
 
   if success then
-    Logger:trace("xpcall was successful")
+    Logger:trace('xpcall was successful')
     return result
   else
-    Logger:trace("xpcall failed: " .. tostring(result))
+    Logger:trace('xpcall failed: ' .. tostring(result))
     return nil, result
   end
 end
@@ -156,7 +155,7 @@ end
 ---@return any|nil result The required module or nil on failure.
 function Load:safe(mod, ...)
   return self:xtry(mod, function(err)
-    Logger:error("load.safe: Failed to load %s: %s", mod, tostring(err))
+    Logger:error('load.safe: Failed to load %s: %s', mod, tostring(err))
     return nil
   end, ...)
 end

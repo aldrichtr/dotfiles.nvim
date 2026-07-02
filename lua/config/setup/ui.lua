@@ -1,20 +1,9 @@
 
-local class  = require('extern.middleclass')
-local Config = require('config')
-local fs     = require('util.fs')
-local path   = require('config.path')
+local M = {}
 
-local Interface = class('Interface', Config)
-
-
-function Interface:initialize()
-	Config.initialize(self)
-end
-
-function Interface:apply()
-
+function M:setup()
   -- SECTION UI Elements
-	Logger:info("Setting up UI elements")
+  Logger:info('Setting up UI elements')
   -- Set the hight of the command area
   vim.opt.cmdheight = 2
   -- Enable modelines in files
@@ -48,7 +37,7 @@ function Interface:apply()
   -- Warn on shell commands when buffer modified
   vim.opt.warn = true
   --
-  vim.cmd.colorscheme("darcula-dark")
+  vim.cmd.colorscheme('darcula-dark')
 
   -- SECTION gui options
   vim.opt.termguicolors = true
@@ -57,7 +46,7 @@ function Interface:apply()
   vim.opt.winblend = 8
   vim.opt.pumblend = 8
 
-  vim.opt.guifont = "AtkynsonMono\\ NF:h11"
+  vim.opt.guifont = 'AtkynsonMono Nerd Font:h9'
 
   if vim.g.neovide then self:setup_neovide() end
   -- !SECTION
@@ -71,12 +60,10 @@ function Interface:apply()
   vim.opt.splitright = true
 
   -- !SECTION
-
-  require('config.setup.autocmds').setup()
 end
 
 ---Configuration for neovide, a "gui" for neovim
-function Interface:setup_neovide()
+function M:setup_neovide()
   -- g:neovide_transparency should be 0 if you want to unify transparency of
   -- content and title bar.
   vim.g.neovide_opacity = 0.95
@@ -109,12 +96,10 @@ function Interface:setup_neovide()
   -- for railgun set the rotation speed
   vim.g.neovide_cursor_vfx_particle_curl = 2.0
 
-
   vim.g.neovide_padding_top = 0
   vim.g.neovide_padding_bottom = 0
   vim.g.neovide_padding_right = 0
   vim.g.neovide_padding_left = 0
 end
 
-
-return Interface
+return M

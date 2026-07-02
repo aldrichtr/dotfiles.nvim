@@ -1,23 +1,19 @@
 
-local path = require('config.path')
-local fs      = require('util.fs')
-local class  = require('extern.middleclass')
-local Config = require('config')
+local Stage = require('config.stage')
+local class = require('extern.middleclass')
 
-local Before = class('Before', Config)
+local Before = class('Before', Stage)
 
 function Before:initialize()
-	Config.initialize(self)
+  Stage.initialize(self)
+  self.label = 'before'
+  self.priority = 1
 end
 
 function Before:apply()
-  Logger:info("Setting priority options")
+  Logger:info('Setting priority options')
   vim.g.mapleader = ' '
   vim.g.maplocalleader = ','
-
-	Logger:trace('adding tree-sitter to the runtimepath')
-  local tsdir = fs.join(path.LocalAppData, 'tree-sitter')
-  vim.opt.rtp:prepend(tsdir)
 end
 
 return Before

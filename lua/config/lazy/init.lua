@@ -1,13 +1,18 @@
 
+local Stage = require('config.stage')
+local class = require('extern.middleclass')
+local fs = require('util.fs')
 local path = require('config.path')
-local fs   = require('util.fs')
-local class  = require('extern.middleclass')
-local Config = require('config')
 
-local Lazy = class('Lazy', Config)
+local Lazy = class('Lazy', Stage)
 
 function Lazy:initialize()
-	Config.initialize(self)
+  Stage.initialize(self)
+  self.label = 'lazy'
+  self.priority = 10
+end
+
+function Lazy:apply()
   self.desc = 'The lazy package manager'
   self.docs = 'https://lazy.folke.io'
   self.repo = 'https://github.com/folke/lazy.nvim.git'
@@ -16,12 +21,12 @@ function Lazy:initialize()
   self.config = {
     spec = {
       { import = 'packages.themes' },
-      { import = 'packages.setup'  }
-    }
+      { import = 'packages.setup' },
+    },
   }
-	Logger:info("Initializing the Lazy package manager")
+  Logger:info('Initializing the Lazy package manager')
   if not self:isInstalled() then
-		Logger:info("Lazy package manager is not installed yet")
+    Logger:info('Lazy package manager is not installed yet')
     self:install()
   end
   vim.opt.rtp:prepend(self.install)
@@ -37,17 +42,21 @@ function Lazy:isInstalled()
 end
 
 function Lazy:install()
-	Logger:info("Installing Lazy package manager")
+  Logger:info('Installing Lazy package manager')
   local out = vim.fn.system({
-    'git', 'clone',
-    '--filter=blob:none', '--branch=stable',
-    self.repo, self.install })
+    'git',
+    'clone',
+    '--filter=blob:none',
+    '--branch=stable',
+    self.repo,
+    self.install,
+  })
 
   if vim.v.shell_error ~= 0 then
-      Logger:error("Failed to clone lazy.nvim:\n%s", out)
-    else
-      Logger:trace("- Success!")
-    end
+    Logger:error('Failed to clone lazy.nvim:\n%s', out)
+  else
+    Logger:trace('- Success!')
   end
+end
 
-  return Lazy
+return Lazy
